@@ -1,0 +1,19 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include "nade.cc"
+
+bool operator == (const nade& a, const nade& b){
+    return (a.getID() == b.getID());
+}
+int main(){
+    std::vector<nade> a;
+    a.push_back(nade("a"));
+    a.push_back(nade("b"));
+    a.push_back(nade("c"));
+
+    std::vector<nade>::iterator itr = std::find(a.begin(), a.end(), nade("a"));
+
+    std::cout<<itr->getID()<<std::endl;
+}
