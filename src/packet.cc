@@ -3,26 +3,35 @@
  * @Author Eui Han
  */
 #include <string>
-#include "node.h"
-packet(std::string id, node* src, node* dst, flow* fl){
+#include <sstream>
+#include "packet.h"
+
+Packet(std::string id, Node* src, Node* dst){
   id_ = id;
+  type_ = id[0];
   origin_ = src;
   dest_ = dst;
-  flow_ = fl;
+  seq_num_ = atoi(id.substr(1));
 }
 
-node* origin(){
-  return origin_;
+Packet(std::string type, int seq, Node* src, Node* dst){
+  sstream out << seq;
+  type_ = type + out.str();
+  seq_ = seq;
+  src_ = src;
+  dst_ = dst;
 }
-node* dest(){
+
+Node* GetSrc(){
+  return src;
+}
+
+Node* GetDest(){
   return dest_;
 }
 int size(){
   return size_;
 }
 int seqNum(){
-  return seqNum_;
-}
-std::string data(){
-  return data_;
+  return seq_num_;
 }
