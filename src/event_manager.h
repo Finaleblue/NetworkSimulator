@@ -19,9 +19,13 @@ class EventManager{
     ofstream out_file_;
     static std::priority_queue<Event> queue_;
     double time_ = 0;
+    int finished_ = 0;
+    bool done_=false;
   public:
     EventManager(std::string, &Network);
     void log(std::string);
-    void run();
+    void SetUp();
+    void Run();
+    bool isDone();
 };
 #endif

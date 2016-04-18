@@ -28,10 +28,9 @@ void Pack(){
 }
 
 void Start(){
-  Pack();
-  std::vector<Packet>::iterator itr = packets_.begin();
+  const std::vector<Packet>::iterator itr = packets_.begin();
   if (itr == packets_.end()){
-    event_manager.add(FlowEndEvent(event_manager.global_time());
+    event_manager.add(FlowEndEvent(this, event_manager.global_time());
   }
 
   else if (src_.allowedToTransmit()){

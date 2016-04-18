@@ -7,6 +7,7 @@ EventManager(const std::string filename, const Network &net){
   links_ = net.GetLinks();
   devices_ = net.GetDevices();
   queue_();
+  global_time_ = 0;
 }
 
 void log(const std::string msg){
@@ -15,10 +16,28 @@ void log(const std::string msg){
   out_file_.close();
 }
 
-void run(){
+void SetUp(){
   for (std::vector<Flow>::iterator itr = flows_.begin(); 
         itr != flows_.end(); ++itr){
+      itr->Pack();
       queue_.push(FlowStartEvent(*itr, itr->GetStartTime());
   }
-
 }
+
+int global_time(){
+  retuurn global_time_;
+}
+bool isDone(){
+  if (finished_ >= flows_.size()) {return true;}
+}
+void Run(){ 
+  while( true ){
+    if (global_time_ >= globla::MAX_SIMULATION_TIME)  {break;}
+    if (isDone()) {break;}
+    Event& e = queue_.top();
+    queue_.pop();
+    global_time_ = e.GetScheduledTime();
+    e.Start();
+  }
+}
+
