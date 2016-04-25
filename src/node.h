@@ -11,16 +11,11 @@
 #define NODE_H_
 
 #include <unordered_map>
-#include "link.h"
+#include <vector>
+class Link;
+class Packet;
+
 class Node{
-  private:
-    int bits_sent_=0;
-    const std::string id_;
-    std::unordered_map<Node, Link> neighbors_; 
-    std::vector<Node> nodes_;
-    std::vector<Link> links_;
-    std::vector<Packet> received_packets_;
-    // bool routerorhostnode?
   public: 
     Node(const std::string id);
     void AddLink(Link&);
@@ -30,6 +25,15 @@ class Node{
     std::vector<Node> GetConnectedNodes();
     virtual void SendPacket(Packet&, double);
     virtual void RecievePacket(Packet&, double);
+
+  protected:
+    int bits_sent_=0;
+    const std::string id_;
+    std::unordered_map<std::string, Link&> neighbors_; 
+    std::vector<Node> nodes_;
+    std::vector<Link> links_;
+    std::vector<Packet> received_packets_;
+    // bool routerorhostnode?
 };
 
 #endif

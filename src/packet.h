@@ -9,21 +9,22 @@
 
 class Packet{
   private:
-    std::string id_;
-    std::string type_; //indicates if it is ACK or Data
-    Node* origin_;//sender of the packet(same as the sender of the flow)
-    Node* dest_;//destination of the packet (same as the destination of the flow)
-    int size_; //size of the packet. Unit: bits
-    int seq_num_; //The sequence number of the packet.
+    const std::string id_;
+    const std::string type_; //indicates if it is ACK or Data
+    const Node* origin_;//sender of the packet(same as the sender of the flow)
+    const Node* dest_;//destination of the packet (same as the destination of the flow)
+    const int size_; //size of the packet. Unit: bits
+    const int seq_num_; //The sequence number of the packet.
   public:
     //constructors
-    Packet(std::string id, Node* src, Node* dst);
-    Packet(std::string type, int seq, Node* src, Node* dst);
+    Packet(const std::string id, const Node* src, const Node* dst);
+    Packet(const std::string type, int seq, const Node* src, const Node* dst);
     
     //functions
-    Node* GetSrc(); //returns the sender info
-    Node* GetDst(); //returns the destination info
-    int size(); //returns the size of the packet
-    int seqNum(); //returns sequence number of this packet
+    const Node* GetSrc() const; //returns the sender info
+    const Node* GetDst() const; //returns the destination info
+    const int size() const; //returns the size of the packet
+    const int seqNum() const; //returns sequence number of this packet
+    const std::string id() const;
 };
 #endif

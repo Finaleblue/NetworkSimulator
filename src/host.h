@@ -6,12 +6,10 @@
 #include "event_manager.h"
 
 class Host: public Node{
-  private:
-    EventManager event_manager;
   public:
     Host(const std::string id);
-    void SendPacket(const Packet &p, const double time);
-    void RecievePacket(const Packet &p, const double time);
-    bool allowedToTransmit();
+    Event SendPacket(const Packet &p, const double time);
+    Event RecievePacket(const Packet &p, const double time);
+    const bool allowedToTransmit() const;
 };
 #endif

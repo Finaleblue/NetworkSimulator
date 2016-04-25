@@ -1,26 +1,26 @@
 #ifndef LINK_H_
 #define LINK_H_
 
-#include "node.h"
+class Node;
 #include "packet.h"
 
 class Link{
-  private::
+  private:
     const std::string id_;
-    const int datarate_;
-    const int buffer_size_;
+    const double datarate_;
+    const double buffer_size_;
     const double delay_;
     const Node& end1_;
     const Node& end2_;
-    bool transmitting_=false;
+    bool transmitting_ = false;
     Packet& packet_to_transmit_;
-    num_packs_in_buffer_=0; 
-    Packet[] buffer_;
+    int num_packs_in_buffer_ = 0; 
+    Packet buffer_[10];
   public:
-    Link(std::string, int, int, double, Node&, Node&);
-    bool isAvailable();
+    Link(std::string, Node&, Node&, double, double, double);
+    const bool isAvailable() const;
     void ReceivePacket(Packet&, double, Node&);
     void SendPacket(Packet&, double, Node&);
     void DoneTransmitting();
-}
+};
 #endif

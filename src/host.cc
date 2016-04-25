@@ -1,20 +1,22 @@
+#include <iostream>
 #include "host.h"
 #include "link.h"
 
-Host(const std::string id){
-  id_ = id;
+extern EventManager event_manager;
+
+Host::Host(const std::string id) : Node::Node(id){}
+
+Event Host::SendPacket(const Packet &p, const double time){
+  return SendPacketEvent( Packt("D", p.seqNum(), *this, p.GetSrc()), *this, link, time);
+  links_[0].ReceivePacket(const_cast<Packet&>(p), time, nodes_[0]);
 }
 
-void SendPacket(const Packet &p, const double time){
-  links_[0].ReceivePacket(p, time, nodes_[0]);
-}
-
-void RecievePacket(const Packet &p, const double time){
-  cout<< "Packet " << p.id() << " received"<< " at time "<< time<<std::endl;
+Event Host::RecievePacket(const Packet &p, const double time){
+  std::cout<< "Packet " << p.id() << " received"<< " at time "<< time<<std::endl;
   received_packets_.push_back(p); 
-  event_manager.push(SendPacketEvent( Packet("A", seqNum(), this, p.GetSrc()), time); 
+  return SendPacketEvent( Packet("A", p.seqNum(), *this, p.GetSrc()), time); 
 } 
 
-bool allowedToTransmit(){
+const bool Host::allowedToTransmit() const{
   return links_[0].isAvailable();
 }

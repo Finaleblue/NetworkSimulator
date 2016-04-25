@@ -6,7 +6,7 @@
 #include <sstream>
 #include "packet.h"
 
-Packet(std::string id, Node* src, Node* dst){
+Packet::Packet(const std::string id, const Node* src, const Node* dst){
   id_ = id;
   type_ = id[0];
   origin_ = src;
@@ -14,7 +14,7 @@ Packet(std::string id, Node* src, Node* dst){
   seq_num_ = atoi(id.substr(1));
 }
 
-Packet(std::string type, int seq, Node* src, Node* dst){
+Packet::Packet(const std::string type, int seq, const Node* src, const Node* dst){
   sstream out << seq;
   type_ = type + out.str();
   seq_ = seq;
@@ -22,16 +22,20 @@ Packet(std::string type, int seq, Node* src, Node* dst){
   dst_ = dst;
 }
 
-Node* GetSrc(){
+const Node* Packet::GetSrc() const{
   return src;
 }
 
-Node* GetDest(){
+const std::string id() const{
+  return id_;
+}
+
+const Node* Packet::GetDest() const{
   return dest_;
 }
-int size(){
+const int Packet::size() const{
   return size_;
 }
-int seqNum(){
+const int Packet::seqNum() const{
   return seq_num_;
 }

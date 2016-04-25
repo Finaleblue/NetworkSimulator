@@ -8,36 +8,34 @@
 
 #include "node.h"
 
-Node(std::string id){
-  id_ = id;
-}
+Node::Node(consts td::string id) : id_(id){}
 
-void AddNeighbor(Node &n, Link &l){
+void Node::AddNeighbor(const Node &n, const Link &l){
   neighbors_.insert({n.id(),l});
   AddLink(Link()) // TODO:add default link spec
 }
 
-void AddLink(Link &l){
+void Node::AddLink(const Link &l){
   links_.push_back(l);
 }
 
-void AddNode(Node &n){
+void Node::AddNode(const Node &n){
   nodes_.push_back(n);
 }
-const std::string GetId(){
+const std::string Node::GetId(){
   return id_;
 }
-std::vector<links*> GetLinks(){
+std::vector<links> Node::GetLinks(){
   return links_;
 }
 
-std::vector<Node> GetConnectedNode(){
+std::vector<Node> Node::GetConnectedNodes(){
   return nodes_;
 }
 
 
-virtual void SendPacket(Packet &p, double time, Link &l, Node &dst){}
-virtual void ReceivePacket(Packet &p, double time){}
+virtual void Node::SendPacket(Packet &p, double time, Link &l, Node &dst){}
+virtual void Node::ReceivePacket(Packet &p, double time){}
 
 
   
