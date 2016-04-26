@@ -19,7 +19,7 @@ class EventManager{
     void log(std::string);
     void Setup();
     void Run();
-    const bool isDone() const;
+    bool isDone() const;
     double global_time() const;
     void push(Event);
 

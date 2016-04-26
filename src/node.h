@@ -14,15 +14,13 @@
 #include <vector>
 #include "link.h"
 #include "packet.h"
-class EventManager;
 
-extern EventManager event_manager;
 class Node{
   public: 
     Node(const std::string id);
     void AddLink(Link&);
     void AddNode(Node&);
-    const std::string GetId();
+    std::string id() const;
     std::vector<Link> GetLinks();
     std::vector<Node> GetConnectedNodes();
     virtual void SendPacket(Packet&, double);

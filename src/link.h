@@ -9,6 +9,7 @@ class Link{
     const std::string id_;
     const double datarate_;
     const double buffer_size_;
+    double occupancy_;
     const double delay_;
     const Node& end1_;
     const Node& end2_;
@@ -22,5 +23,7 @@ class Link{
     void ReceivePacket(Packet&, double, Node&);
     void SendPacket(Packet&, double, Node&);
     void DoneTransmitting();
+    double GetCost() const;
+     
 };
 #endif

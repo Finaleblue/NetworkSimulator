@@ -8,7 +8,7 @@
 
 #include "node.h"
 
-Node::Node(consts td::string id) : id_(id){}
+Node::Node(const std::string id) : id_(id){}
 
 void Node::AddNeighbor(const Node &n, const Link &l){
   neighbors_.insert({n.id(),l});
@@ -22,7 +22,7 @@ void Node::AddLink(const Link &l){
 void Node::AddNode(const Node &n){
   nodes_.push_back(n);
 }
-const std::string Node::GetId(){
+std::string Node::id() const{
   return id_;
 }
 std::vector<links> Node::GetLinks(){

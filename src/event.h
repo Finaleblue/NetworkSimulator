@@ -2,8 +2,8 @@
 #define EVENT_H_
 
 class Packet;
+class Node;
 class Flow;
-#include "event_manager.h"
 
 class Event{
   public:
@@ -32,19 +32,22 @@ class FlowEndEvent: public Event{
   private:
     const Flow& flow_to_end_;
 };
+
 class SendPacketEvent: public Event{
   public:
-    SendPacketEvent(Packet, double);
+    SendPacketEvent(const &Node, const Packet, double);
 
   private:
+    const Node& target_;
     const Packet& packet_to_send;
-  };
+};
 
 class ReceivePacketEvent: public Event{
   public:
-    ReceivePacketEvent(Packet, double);
+    ReceivePacketEvent(const &Node, const Packet, double);
 
   private:
+    const Node& target_;
     const Packet& packet_to_receive;
 };
 #endif

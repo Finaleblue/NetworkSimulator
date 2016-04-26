@@ -37,3 +37,7 @@ void Link::SendPacket(Packet &p, double t, Node& to){
 void Link::DoneTransmitting(){
   transmitting = false;
 }
+
+double GetCost(){
+  return occupancy_ / datarate_;
+}

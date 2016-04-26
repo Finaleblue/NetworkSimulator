@@ -1,16 +1,14 @@
 #include "router.h"
-#include "link.h"
-#include "global.h"
-#include <vector>
+#include "event.h"
+#include "event_manager.h"
 
 Router::Router(const std::string id): Node(id){}
 
-
-void Router::SendPacket(Node& target, const Packet &p, const double time){
+void Router::SendPacket(const Link& target, const Packet &p, double time) const{
   event_manager.push(ReceivePacketEvent(target, p, time));
 }
 
-void Router::ReceivePacket(const Packet &p, const double time){
+void Router::ReceivePacket(const Packet &p, double time){
   if (p.type() == "C"){ //if the received packet is control type
     ReceiveControl(p);
   }
@@ -20,7 +18,7 @@ void Router::ReceivePacket(const Packet &p, const double time){
 } 
 
 bool Router::allowedToTransmit(){
-  return links_[0].isAvailable();
+  //return links_[0].isAvailable();
 }
 
 Link& Router::GetRoute(std::string host_id){
@@ -29,8 +27,8 @@ Link& Router::GetRoute(std::string host_id){
 
 //separate vectors for router and host?
 void Router::UpdateTable(std::string router_id){
-  routing_table[router_id] = nodes_[router_id].RoutingVector();
-  UpdateCost()
+  routing_table_[router_id] = dynamic_cast<Router&>(nodes_[router_id]).RoutingVector();
+  UpdateCost();
 }
 
 //Implementation of Bellman-Ford
@@ -38,12 +36,12 @@ void Router::UpdateCost(){ // updates cost vector every time step
   for(auto const &neighbor : neighbors_){
     cost_[neighbor.first] = neighbor.second.GetCost(); // sum (packetSize/rate)
   }
-  for(auto const &r : routing_table_){
-    for(auto const &c : routers.second){
-      double temp = c.second + costs_[r];
-        if (temp < routing_table_[id][c.first]){
-          routing_table_[id][c.first] = temp;
-          next_hop_[c.first] = r;
+  for(auto const r : routing_table_){
+    for(auto const &c : r.second){
+      double temp = c.second + cost_[r.first];
+        if (temp < routing_table_[Node::id_][c.first]){
+          routing_table_[Node::id_][c.first] = temp;
+          next_hop_[c.first] = r.first;
         }
     }
   }
@@ -57,8 +55,13 @@ void Router::SendControl() const{
   }
 }
 
-void Router::ReceiveControl(Packet& p){
+void Router::ReceiveControl(const Packet& p){
   UpdateTable(p.GetSrc().id());
 }
+
+std::map<std::string, double> Router::RoutingVector() const{
+  return routing_table_[Node::id_];
+}
+
 
 //initiate with greedy algorithm
