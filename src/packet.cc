@@ -33,9 +33,15 @@ const std::string id() const{
 const Node* Packet::GetDest() const{
   return dest_;
 }
+
 const int Packet::size() const{
   return size_;
 }
+
 const int Packet::seqNum() const{
   return seq_num_;
+}
+
+const std::string Packet::type() const{
+  return type_;
 }

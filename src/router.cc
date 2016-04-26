@@ -1,48 +1,64 @@
 #include "router.h"
 #include "link.h"
 #include "global.h"
+#include <vector>
 
-Router::Router(const std::string id){
-  id_ = id;
+Router::Router(const std::string id): Node(id){}
+
+
+void Router::SendPacket(Node& target, const Packet &p, const double time){
+  event_manager.push(ReceivePacketEvent(target, p, time));
 }
 
-void Router::SendPacket(const Packet &p, const double time){
-  links_[0].ReceivePacket(p, time, nodes_[0]);
-}
-
-void Router::RecievePacket(const Packet &p, const double time){
-  cout<< "Packet " << p.id() << " received"<< " at time "<< time<<std::endl;
-  received_packets_.push_back(p); 
-  global::event_manager.push(SendPacketEvent( Packet("A", seqNum(), this, p.GetSrc()), time); 
+void Router::ReceivePacket(const Packet &p, const double time){
+  if (p.type() == "C"){ //if the received packet is control type
+    ReceiveControl(p);
+  }
+  else{
+    SendPacket(GetRoute(p.GetDst().id()), p, time);
+  }
 } 
 
 bool Router::allowedToTransmit(){
   return links_[0].isAvailable();
 }
 
+Link& Router::GetRoute(std::string host_id){
+  return next_hop_[host_id];
+}
+
 //separate vectors for router and host?
-void UpdateTable(){
-  UpdateCostVec();
-  for router in routers{
-    for routing_table[router_id]
-      double temp = routing_table[router_id]->first() + cost_vector(router_id);
-      if (temp < routing_table[this]) 
-        routing_table[this] = temp;
+void Router::UpdateTable(std::string router_id){
+  routing_table[router_id] = nodes_[router_id].RoutingVector();
+  UpdateCost()
+}
+
+//Implementation of Bellman-Ford
+void Router::UpdateCost(){ // updates cost vector every time step
+  for(auto const &neighbor : neighbors_){
+    cost_[neighbor.first] = neighbor.second.GetCost(); // sum (packetSize/rate)
+  }
+  for(auto const &r : routing_table_){
+    for(auto const &c : routers.second){
+      double temp = c.second + costs_[r];
+        if (temp < routing_table_[id][c.first]){
+          routing_table_[id][c.first] = temp;
+          next_hop_[c.first] = r;
+        }
+    }
   }
 }
 
-void UpdateCostVec(){ // updates cost vector every time step
-  for l in link{
-    cost_vector[i] = l.getCost(); // sum (packetSize*rate )
+void Router::SendControl() const{
+  int i = 0;
+  for(auto const &node : nodes_){
+    event_manager.push(ReceivePacketEvent(node, Packet("C", i, *this, node), event_manager.global_time()));
+    ++i;
   }
 }
 
-Event SendControlEvent(control packet){
-  //sends its distance vector to its neighbors
-}
-
-Event ReceiveControlEvent(control packet){
-  routing_table[packet.getSrc().id()] = packet.getSrc().distanceVec ;
+void Router::ReceiveControl(Packet& p){
+  UpdateTable(p.GetSrc().id());
 }
 
 //initiate with greedy algorithm

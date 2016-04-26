@@ -10,11 +10,13 @@
 #ifndef NODE_H_
 #define NODE_H_
 
-#include <unordered_map>
+#include <map>
 #include <vector>
-class Link;
-class Packet;
+#include "link.h"
+#include "packet.h"
+class EventManager;
 
+extern EventManager event_manager;
 class Node{
   public: 
     Node(const std::string id);
@@ -29,10 +31,12 @@ class Node{
   protected:
     int bits_sent_=0;
     const std::string id_;
-    std::unordered_map<std::string, Link&> neighbors_; 
-    std::vector<Node> nodes_;
-    std::vector<Link> links_;
-    std::vector<Packet> received_packets_;
+    double  time_=-1;
+    //maps id of each device to the actual object
+    std::map<std::string, Link&> neighbors_; 
+    std::map<std::string, Node> nodes_;
+    std::map<std::string, Link> links_;
+    std::map<std::string, Packet> received_packets_;
     // bool routerorhostnode?
 };
 

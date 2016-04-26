@@ -21,10 +21,12 @@ class Packet{
     Packet(const std::string type, int seq, const Node* src, const Node* dst);
     
     //functions
-    const Node* GetSrc() const; //returns the sender info
-    const Node* GetDst() const; //returns the destination info
-    const int size() const; //returns the size of the packet
-    const int seqNum() const; //returns sequence number of this packet
-    const std::string id() const;
+    Node* GetSrc() const; //returns the sender info
+    Node* GetDst() const; //returns the destination info
+    int size() const; //returns the size of the packet
+    int seqNum() const; //returns sequence number of this packet
+    std::string id() const;
+    std::string type() const; // returns the type of the packet
+    
 };
 #endif
