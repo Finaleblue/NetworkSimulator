@@ -35,8 +35,8 @@ std::vector<Node> Node::GetConnectedNodes(){
   return nodes_;
 }
 
-virtual void Node::SendPacket(const &Link, const Packet, double) const{}
-virtual void Node::ReceivePacket(const Packet p, double){}
+void Node::SendPacket(const &Link, const Packet, double) const{}
+void Node::ReceivePacket(const Packet p, double){}
 
 
   

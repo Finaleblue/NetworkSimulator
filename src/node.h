@@ -23,8 +23,8 @@ class Node{
     std::string id() const;
     std::vector<Link> GetLinks();
     std::vector<Node> GetConnectedNodes();
-    virtual void SendPacket(Link&, Packet, double);
-    virtual void RecievePacket(Packet, double);
+    void SendPacket(Link&, Packet, double);
+    void RecievePacket(Packet, double);
 
   protected:
     int bits_sent_=0;
