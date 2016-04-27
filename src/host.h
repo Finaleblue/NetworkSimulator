@@ -5,11 +5,12 @@
 #include "event.h"
 #include "event_manager.h"
 
+extern EventManager event_manager;
 class Host: public Node{
   public:
     Host(const std::string id);
-    Event SendPacket(const Packet &p, const double time);
-    Event RecievePacket(const Packet &p, const double time);
+    void SendPacket(Link&, Packet, double);
+    void RecievePacket(Packet, double);
     const bool allowedToTransmit() const;
 };
 #endif

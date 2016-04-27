@@ -4,7 +4,7 @@
  * Purpose: Network Simulator Entry Point
  * 
  * @author Kangqiao Lei
- * @version 0.2.0 04/21/16
+ * @version 0.3.0 04/26/16
  */
 
 //#define NDEBUG // Comment out to turn on debug information and assertions
@@ -21,25 +21,26 @@
 #include "rapidjson/stringbuffer.h"
 #include "rapidjson/writer.h"
 
+#include "host.h"
+#include "router.h"
 #include "network.h"
 #include "global.h"
 #include "event_manager.h"
 #include "flow.h"
 #include "packet.h"
-#include "host.h"
-#include "router.h"
 #include "link.h"
 
 //#include <fstream>
 
 //#include "rapidjson/prettywriter.h" // for stringify JSON
-
+//TODO: Examine How things are parsed
 bool debug = false;
 std::ostream &debugSS = std::cout;
 std::ostream &errorSS = std::cerr;
 std::ostream &outputSS = std::cout;
 
-int parseInputs(Network& net, const std::string inputFile) {
+Network parseInputs(const std::string inputFile) {
+  Network net;
   rapidjson::Document root; // root is a JSON value represents the root of DOM.
   #ifndef NDEBUG
     debugSS << "Parse a JSON file to document root." << std::endl;
@@ -73,7 +74,7 @@ int parseInputs(Network& net, const std::string inputFile) {
 	
       rapidjson::Value::MemberIterator end = root.FindMember("end"); // assert(root.HasMember("hosts")); // Old version
       float endtime = (end != root.MemberEnd()) ? end->value.GetDouble() : 0;
-      MAX_SIMULATION_TIME = endtime;
+      Global::MAX_SIMULATION_TIME = endtime;
       #ifndef NDEBUG
         debugSS << "Set end time of simulator: " << endtime << std::endl;
       #endif	
@@ -84,7 +85,7 @@ int parseInputs(Network& net, const std::string inputFile) {
 
       for (rapidjson::SizeType i = 0; i < hosts.Size(); ++i) {
         const rapidjson::Value& chosts = hosts[i];
-        net.AddHost(chosts["id"].GetString()); 
+        //net.AddHost(chosts["id"].GetString()); 
         #ifndef NDEBUG
           debugSS << "Added Host " << chosts["id"].GetString() << std::endl;;
         #endif
@@ -100,7 +101,7 @@ int parseInputs(Network& net, const std::string inputFile) {
 
       for (rapidjson::SizeType i = 0; i < routers.Size(); ++i) {
         const rapidjson::Value& crouter = routers[i];
-        net.AddRouter(crouter["id"].GetString());
+        //net.AddRouter(crouter["id"].GetString());
         #ifndef NDEBUG
           debugSS << "Added Router " << crouter["id"].GetString() << std::endl;
         #endif
@@ -117,8 +118,8 @@ int parseInputs(Network& net, const std::string inputFile) {
 
       for (rapidjson::SizeType i = 0; i < links.Size(); ++i) {
         const rapidjson::Value& clink = links[i];
-        net.AddLink(clink["id"].GetString(), clink["node_id1"].GetString(), clink["node_id2"].GetString(), 
-                    clink["rate"].GetDouble(), clink["delay"].GetDouble(), clink["buffer"].GetDouble());
+        //net.AddLink(clink["id"].GetString(), clink["node_id1"].GetString(), clink["node_id2"].GetString(), 
+         //           clink["rate"].GetDouble(), clink["delay"].GetDouble(), clink["buffer"].GetDouble());
         #ifndef NDEBUG
           debugSS <<"Added Link " << clink["id"].GetString() << std::endl;
         #endif
@@ -148,9 +149,9 @@ int parseInputs(Network& net, const std::string inputFile) {
         else {
           tcp_enum = "TAHOE";
         }
-        net.AddFlow(cflow["id"].GetString(), cflow["start_time"].GetDouble(), 
-                    cflow["data_size"].GetDouble(), cflow["node_src"].GetString(), 
-                    cflow["node_dst"].GetString(), tcp_enum);
+        //net.AddFlow(cflow["id"].GetString(), cflow["start_time"].GetDouble(), 
+         //           cflow["data_size"].GetDouble(), cflow["node_src"].GetString(), 
+          //          cflow["node_dst"].GetString(), tcp_enum);
         #ifndef NDEBUG
           debugSS << "Added Flow " << cflow["id"].GetString() << std::endl;
         #endif
@@ -161,10 +162,11 @@ int parseInputs(Network& net, const std::string inputFile) {
       debugSS << "Finished Adding Flows." << std::endl;
     #endif
 	
-    return 0;
+    return net;
 }
 
-EventManager event_manager;
+//EventManager event_manager("./out.txt", Network());
+
 int main(int argc, char *argv[]) {
   int c = -1, b = 0; // getopt options
   static char usageInfo[] = "[-i input_file] [-o output_file] [-d]\n"; // Prompt on invalid input
@@ -205,12 +207,11 @@ int main(int argc, char *argv[]) {
   #endif	
 	
 	// Load JSON Input File
-  Network net;
-  parseInputs(net, inputFile);
+  Network net = parseInputs(inputFile);
   #ifndef NDEBUG
     debugSS << "Loaded Network Topology." << std::endl;
   #endif
-  event_manager = EventManager("./out.txt", net);
+ // event_manager = EventManager("./out.txt", net);
   //EventManager eveman("./out.txt", net);
   //globall::simulator = eveman;
   //global::simulator.Setup();
