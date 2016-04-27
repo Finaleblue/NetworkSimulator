@@ -41,11 +41,19 @@ void SendPacketEvent::Start(){
 }
 
 ReceivePacketEvent::ReceivePacketEvent(const Node &target, const Packet p, double t)
-  :target_(target), packet_to_receive_(p), schedule_at_(t){}
+  :target_(target), packet_to_receive_(p), Event::schedule_at_(t){}
 
 
 void ReceivePacketEvent::Start(){
   std::cout<<"Packet Received"<<std::endl;
-  target_.ReceivePacket(packet_to_receive_, schedule_at_);
+  target_.ReceivePacket(packet_to_receive_, Event::schedule_at_);
+}
+
+TransmitPacketEvent::TransmitPacketEvent(const Link &target, const Packet p, double t)
+  :target_(target), packet_to_receive_(p), Event::schedule_at_(t){}
+
+void TransmitPacketEvent::Start(){
+  std::cout<<"Packet Received"<<std::endl;
+  target_.TransmitPacket(packet_to_transmit_, Event::schedule_at_);
 }
 

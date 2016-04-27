@@ -39,7 +39,7 @@ class SendPacketEvent: public Event{
 
   private:
     const Node& target_;
-    const Packet& packet_to_send;
+    const Packet packet_to_send;
 };
 
 class ReceivePacketEvent: public Event{
@@ -48,6 +48,14 @@ class ReceivePacketEvent: public Event{
 
   private:
     const Node& target_;
-    const Packet& packet_to_receive;
+    const Packet packet_to_receive;
+};
+
+class TransmitPacketEvent: public Event{
+  public:
+    TransmitPacketEvent(const &Link, const Packet, double);
+  private:
+    const Link& target_;
+    const Packet packet_to_receive;
 };
 #endif

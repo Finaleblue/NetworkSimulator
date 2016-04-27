@@ -20,6 +20,7 @@ class Router: public Node{
     void UpdateCost();
     void SendControl() const;
     void ReceiveControl(const Packet& p);
+    std::map<std::string, double> RoutingVector() const;
   private:
     //each row represents each router's dist_ + cost_ vector
     std::map<std::string, std::map<std::string, double> > routing_table_;

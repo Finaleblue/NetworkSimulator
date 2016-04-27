@@ -17,8 +17,8 @@ class Packet{
     const int seq_num_; //The sequence number of the packet.
   public:
     //constructors
-    Packet(const std::string id, const Node* src, const Node* dst);
-    Packet(const std::string type, int seq, const Node* src, const Node* dst);
+    Packet(const std::string id, const Node& src, const Node& dst);
+    Packet(const std::string type, int seq, const Node& src, const Node& dst);
     
     //functions
     Node& GetSrc() const; //returns the sender info

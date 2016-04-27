@@ -5,7 +5,7 @@
 Router::Router(const std::string id): Node(id){}
 
 void Router::SendPacket(const Link& target, const Packet &p, double time) const{
-  event_manager.push(ReceivePacketEvent(target, p, time));
+  event_manager.push(TransmitPacketEvent(target, p, time));
 }
 
 void Router::ReceivePacket(const Packet &p, double time){
@@ -22,7 +22,7 @@ bool Router::allowedToTransmit(){
 }
 
 Link& Router::GetRoute(std::string host_id){
-  return next_hop_[host_id];
+  return links_[next_hop_[host_id]];
 }
 
 //separate vectors for router and host?
@@ -50,7 +50,7 @@ void Router::UpdateCost(){ // updates cost vector every time step
 void Router::SendControl() const{
   int i = 0;
   for(auto const &node : nodes_){
-    event_manager.push(ReceivePacketEvent(node, Packet("C", i, *this, node), event_manager.global_time()));
+    event_manager.push(ReceivePacketEvent(node.second, Packet('C', i, *this, node.second), event_manager.global_time()));
     ++i;
   }
 }
