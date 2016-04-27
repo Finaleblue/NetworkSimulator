@@ -7,6 +7,8 @@
  */
 
 #include "node.h"
+#include "packet.h"
+#include "link.h"
 
 Node::Node(const std::string id) : id_(id){}
 
@@ -33,9 +35,8 @@ std::vector<Node> Node::GetConnectedNodes(){
   return nodes_;
 }
 
-
-virtual void Node::SendPacket(Packet &p, double time, Link &l, Node &dst){}
-virtual void Node::ReceivePacket(Packet &p, double time){}
+virtual void Node::SendPacket(const &Link, const Packet, double) const{}
+virtual void Node::ReceivePacket(const Packet p, double){}
 
 
   

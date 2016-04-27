@@ -8,6 +8,6 @@ class SendPacketEvent: public Event{
 
   private:
     const Node& target_;
-    const Packet& packet_to_send;
+    const Packet packet_to_send;
 };
 #endif

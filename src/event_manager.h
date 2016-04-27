@@ -15,7 +15,7 @@ class Network;
 class EventManager{
   public:
     EventManager();
-    EventManager(std::string, Network&);
+    EventManager(std::string, Network);
     void log(std::string);
     void Setup();
     void Run();
@@ -24,9 +24,9 @@ class EventManager{
     void push(Event);
 
   private:
-    std::vector<Flow> &flows_;
-    std::vector<Link> &links_;
-    std::vector<Node> &devices_;
+    std::vector<Flow> flows_;
+    std::vector<Link> links_;
+    std::vector<Node> devices_;
     std::string output_filename_="";
     std::ofstream out_file_;
     std::priority_queue<Event> queue_;

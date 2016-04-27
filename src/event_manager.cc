@@ -43,9 +43,7 @@ void EventManager::Run(){
     Event& e = const_cast<Event&>(queue_.top());
     queue_.pop();
     global_time_ = e.GetScheduledTime();
-    e.Start();
-  }
-}
+    e.Start()  }
 void EventManager::push(Event e){
   queue_.push(e); 
 }

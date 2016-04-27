@@ -12,8 +12,8 @@
 
 #include <map>
 #include <vector>
-#include "link.h"
-#include "packet.h"
+class Link;
+class Packet;
 
 class Node{
   public: 
@@ -23,8 +23,8 @@ class Node{
     std::string id() const;
     std::vector<Link> GetLinks();
     std::vector<Node> GetConnectedNodes();
-    virtual void SendPacket(Packet&, double);
-    virtual void RecievePacket(Packet&, double);
+    virtual void SendPacket(Link&, Packet, double);
+    virtual void RecievePacket(Packet, double);
 
   protected:
     int bits_sent_=0;

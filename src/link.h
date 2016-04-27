@@ -20,8 +20,8 @@ class Link{
   public:
     Link(std::string, Node&, Node&, double, double, double);
     const bool isAvailable() const;
-    void ReceivePacket(Packet&, double, Node&);
-    void SendPacket(Packet&, double, Node&);
+    void ReceivePacket(const Node&, Packet, double, Node&);
+    void SendPacket(Packet, double);
     void DoneTransmitting();
     double GetCost() const;
      

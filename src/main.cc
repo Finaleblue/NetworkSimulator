@@ -164,6 +164,7 @@ int parseInputs(Network& net, const std::string inputFile) {
     return 0;
 }
 
+EventManager event_manager;
 int main(int argc, char *argv[]) {
   int c = -1, b = 0; // getopt options
   static char usageInfo[] = "[-i input_file] [-o output_file] [-d]\n"; // Prompt on invalid input
@@ -209,7 +210,7 @@ int main(int argc, char *argv[]) {
   #ifndef NDEBUG
     debugSS << "Loaded Network Topology." << std::endl;
   #endif
-  EventManager simulator("./out.txt", net);
+  event_manager = EventManager("./out.txt", net);
   //EventManager eveman("./out.txt", net);
   //globall::simulator = eveman;
   //global::simulator.Setup();

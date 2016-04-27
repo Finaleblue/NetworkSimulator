@@ -1,5 +1,4 @@
 #include "receive_packet_event.h"
-
 ReceivePacketEvent::ReceivePacketEvent(const Node &target, const Packet p, double t)
   :target_(target), packet_to_receive_(p), schedule_at_(t){}
 
