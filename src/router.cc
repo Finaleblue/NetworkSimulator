@@ -1,11 +1,10 @@
 #include "router.h"
 #include "event_manager.h"
-#include "receive_packet_event.h"
-#include "transmit_packet_event.h"
+#include "event.h"
 
 Router::Router(const std::string id): Node(id){}
 
-void Router::SendPacket(const Link& target, const Packet p, double time) const{
+void Router::SendPacket(Link& target, const Packet p, double time) const{
   event_manager.push(TransmitPacketEvent(target, p, time));
 }
 
@@ -28,7 +27,7 @@ Link& Router::GetRoute(std::string host_id){
 
 //separate vectors for router and host?
 void Router::UpdateTable(std::string router_id){
-  routing_table_.at(router_id) = dynamic_cast<Router&>(Node::nodes_.at(router_id)).RoutingVector();
+  routing_table_.at(router_id) = dynamic_cast<const Router&>(Node::nodes_.at(router_id)).RoutingVector();
   UpdateCost();
 }
 
@@ -50,7 +49,7 @@ void Router::UpdateCost(){ // updates cost vector every time step
 
 void Router::SendControl() const{
   int i = 0;
-  for(auto const &node : nodes_){
+  for(auto &node : nodes_){
     event_manager.push(ReceivePacketEvent(node.second, Packet("C", i, *this, node.second), event_manager.global_time()));
     ++i;
   }
@@ -60,7 +59,7 @@ void Router::ReceiveControl(const Packet p){
   UpdateTable(p.GetSrc().id());
 }
 
-std::map<std::string, double> Router::RoutingVector(){
+std::map<std::string, double> Router::RoutingVector() const{
   return routing_table_.at(Node::id_);
 }
 

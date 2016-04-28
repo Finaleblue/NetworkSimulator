@@ -21,10 +21,10 @@ double Flow::GetStartTime() const{
 void Flow::Pack(){
   int data = size_;
   int i=1;
-  while (data!=0){
+  while (data > 0){
     packets_.push_back(Packet("D",i,src_, dst_));
     ++i;
-    data -= global::PACKET_SIZE;
+    data -= global::DATA_PACKET_SIZE;
   }
   num_packs_ = packets_.size();
 }
