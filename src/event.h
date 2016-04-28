@@ -9,10 +9,11 @@
 class Event{
   public:
     Event(double);
+    virtual ~Event();
     bool operator < (const Event&) const;
     bool operator > (const Event&) const;
     bool operator == (const Event&) const;
-    void Start();
+    virtual void Start();
     double GetScheduledTime();
 
   protected:
@@ -30,35 +31,35 @@ class ReceivePacketEvent: public Event{
 
 class TransmitPacketEvent: public Event{
   public:
-    TransmitPacketEvent(const Link&, const Packet, double);
+    TransmitPacketEvent(Link&, const Packet, double);
     void Start();
   private:
-    const Link& target_;
+    Link& target_;
     const Packet packet_to_send_;
 };
 
 class FlowEndEvent: public Event{
   public:
-    FlowEndEvent(const Flow&, double);
+    FlowEndEvent(Flow&, double);
     void Start();
   private:
-    const Flow& flow_to_end_;
+    Flow& flow_to_end_;
 };
 
 class FlowStartEvent: public Event{
   public:
-    FlowStartEvent(const Flow&, double);
+    FlowStartEvent(Flow&, double);
     void Start();
   private:
-    const Flow& flow_to_start_;
+    Flow& flow_to_start_;
 };
 
 class SendPacketEvent: public Event{
   public:
-    SendPacketEvent(const Node&, const Packet, double);
+    SendPacketEvent(Node&, const Packet, double);
     void Start();
   private:
-    const Node& target_;
+    Node& target_;
     const Packet packet_to_send_;
 };
 #endif

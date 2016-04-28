@@ -11,33 +11,33 @@
 #include "link.h"
 
 Node::Node(const std::string id) : id_(id){}
+Node::~Node(){}
 
-void Node::AddNeighbor(const Node &n, const Link &l){
-  neighbors_.emplace(n.id(),l);
+void Node::AddNeighbor(Node &n, Link &l){
+  neighbors_.insert({n.id(),l});
   AddLink(l);
   AddNode(n);
 }
 
-void Node::AddLink(const Link &l){
+void Node::AddLink(Link &l){
   links_.emplace(l.id(),l);
 }
 
-void Node::AddNode(const Node &n){
+void Node::AddNode(Node &n){
   nodes_.emplace(n.id(), n);
 }
 std::string Node::id() const{
   return id_;
 }
-std::map<std::string, const Link&> Node::GetLinks(){
+std::map<std::string, Link&> Node::GetLinks(){
   return links_;
 }
 
-std::map<std::string, const Node&> Node::GetConnectedNodes(){
+std::map<std::string, Node&> Node::GetConnectedNodes(){
   return nodes_;
 }
 
-void Node::SendPacket(const Node&, const Packet, double) const{}
-void Node::ReceivePacket(const Packet p, double){}
-
+void Node::SendPacket(Node&, const Packet, double) const{}
+void Node::ReceivePacket(const Packet, double){}
 
   

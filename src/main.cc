@@ -9,6 +9,7 @@
 
 //#define NDEBUG // Comment out to turn on debug information and assertions
 
+#include "event_manager.h"
 #include <cstdio>
 #include <string>
 #include <iostream>
@@ -25,7 +26,6 @@
 #include "router.h"
 #include "network.h"
 #include "global.h"
-#include "event_manager.h"
 #include "flow.h"
 #include "packet.h"
 #include "link.h"
@@ -39,8 +39,10 @@ std::ostream &debugSS = std::cout;
 std::ostream &errorSS = std::cerr;
 std::ostream &outputSS = std::cout;
 
-Network parseInputs(const std::string inputFile) {
-  Network net;
+EventManager event_manager;
+
+void parseInputs(const std::string inputFile) {
+  Network &net = event_manager.Net();
   rapidjson::Document root; // root is a JSON value represents the root of DOM.
   #ifndef NDEBUG
     debugSS << "Parse a JSON file to document root." << std::endl;
@@ -54,7 +56,7 @@ Network parseInputs(const std::string inputFile) {
     rapidjson::StringBuffer buffer;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
     root.Accept(writer);
-    debugSS << "Original JSON:\n" << buffer.GetString() << std::endl;
+    debugSS << "Original JSON:\n" << buffer.GetString()<<"\n\n" << std::endl;
   }
 //		if (root.ParseStream(json).HasParseError()) {
 //			fprintf(errorSS, "\nError(offset %u): %s\n", 
@@ -74,7 +76,7 @@ Network parseInputs(const std::string inputFile) {
 	
       rapidjson::Value::MemberIterator end = root.FindMember("end"); // assert(root.HasMember("hosts")); // Old version
       float endtime = (end != root.MemberEnd()) ? end->value.GetDouble() : 0;
-      Global::MAX_SIMULATION_TIME = endtime;
+      global::MAX_SIMULATION_TIME = endtime;
       #ifndef NDEBUG
         debugSS << "Set end time of simulator: " << endtime << std::endl;
       #endif	
@@ -162,10 +164,7 @@ Network parseInputs(const std::string inputFile) {
       debugSS << "Finished Adding Flows." << std::endl;
     #endif
 	
-    return net;
 }
-
-EventManager event_manager("./out.txt", Network());
 
 int main(int argc, char *argv[]) {
   int c = -1, b = 0; // getopt options
@@ -207,11 +206,10 @@ int main(int argc, char *argv[]) {
   #endif	
 	
 	// Load JSON Input File
-  Network net = parseInputs(inputFile);
   #ifndef NDEBUG
     debugSS << "Loaded Network Topology." << std::endl;
   #endif
-  event_manager = EventManager("./out.txt", net);
+  //EventManager event_manager("./out.txt", net);
   //EventManager eveman("./out.txt", net);
   //globall::simulator = eveman;
   //global::simulator.Setup();

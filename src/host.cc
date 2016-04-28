@@ -4,9 +4,10 @@
 #include "event.h"
 
 
+
 Host::Host(const std::string id) : Node::Node(id){}
 
-void Host::SendPacket(const Link &l, const Packet p, double time){
+void Host::SendPacket(Link &l, const Packet p, double time){
   event_manager.push(TransmitPacketEvent(l, p, time));
 }
 

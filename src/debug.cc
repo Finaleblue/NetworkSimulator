@@ -1,5 +1,7 @@
 #include <vector>
 #include <string>
+#include <iostream>
+void printint(std::string);
 class A{
       public:
         std::vector<std::string>& GetVec(){return vec;}
@@ -18,4 +20,10 @@ class B{
 int main(){
   A a;
   B b(a);
+  std::string id = "C1";
+  printint(id[1]-'0');
+}
+
+void printint(std::string i){
+  std::cout<<i<<std::endl;
 }

@@ -3,28 +3,28 @@
 
 class Node;
 #include "packet.h"
+#include <queue>
 
 class Link{
   public:
     Link(const std::string, const Node&, const Node&, double, double, double);
     bool isAvailable() const;
-    void ReceivePacket(const Packet, double) const;
+    void ReceivePacket(const Packet, double);
     void SendPacket(const Packet, double);
     void DoneTransmitting();
     double GetCost() const;
     std::string id() const;
   private:
-    std::string id_;
-    double datarate_;
-    double buffer_size_;
+    const std::string id_;
+    const double datarate_;
+    const double buffer_size_;
     double occupancy_;
-    double delay_;
+    const double delay_;
     const Node& end1_;
     const Node& end2_;
     bool transmitting_ = false;
-    Packet& packet_to_transmit_;
     int num_packs_in_buffer_ = 0; 
-    const Packet buffer_[10];
+    std::queue<Packet> buffer_;
      
 };
 #endif

@@ -6,6 +6,8 @@
 #include "packet.h"
 
 Event::Event(double t): schedule_at_(t){}
+Event::~Event(){}
+
 bool Event::operator < (const Event& e) const{
   return (*this).schedule_at_ < e.schedule_at_;
 }
@@ -20,6 +22,10 @@ double Event::GetScheduledTime(){
   return schedule_at_;
 }
 
+void Event::Start(){}
+
+
+
 ReceivePacketEvent::ReceivePacketEvent(Node &target, const Packet p, double t)
   :Event(t), target_(target), packet_to_receive_(p){}
 
@@ -29,14 +35,14 @@ void ReceivePacketEvent::Start(){
   target_.ReceivePacket(packet_to_receive_, schedule_at_);
 }
 
-TransmitPacketEvent::TransmitPacketEvent(const Link &target, const Packet p, double t)
+TransmitPacketEvent::TransmitPacketEvent(Link &target, const Packet p, double t)
   :target_(target), packet_to_send_(p), Event(t){}
 
 void TransmitPacketEvent::Start(){
   target_.ReceivePacket(packet_to_send_, schedule_at_);
 }
 
-FlowEndEvent::FlowEndEvent(const Flow &f, double t)
+FlowEndEvent::FlowEndEvent(Flow &f, double t)
   :flow_to_end_ (f), Event(t){}
 
 
@@ -44,14 +50,14 @@ void FlowEndEvent::Start(){
  // flow_to_end_.End();
 }
 
-FlowStartEvent::FlowStartEvent(const Flow &f, double t) 
+FlowStartEvent::FlowStartEvent(Flow &f, double t) 
   : flow_to_start_(f), Event(t){}
 
 void FlowStartEvent::Start(){
   //flow_to_start_.Start();
 }
 
-SendPacketEvent::SendPacketEvent(const Node &target, const Packet p, double t)
+SendPacketEvent::SendPacketEvent(Node &target, const Packet p, double t)
   :target_(target), packet_to_send_(p), Event(t){}
 
 

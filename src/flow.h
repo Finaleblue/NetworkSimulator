@@ -1,13 +1,10 @@
 #ifndef FLOW_H_
-#define FLOW_H_
+ #define FLOW_H_
 
 #include <vector>
-#include "event_manager.h"
 
 class Host;
 class Packet;
-
-extern EventManager event_manager;
 
 class Flow{
   private:
