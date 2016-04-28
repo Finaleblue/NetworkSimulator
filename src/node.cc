@@ -13,30 +13,31 @@
 Node::Node(const std::string id) : id_(id){}
 
 void Node::AddNeighbor(const Node &n, const Link &l){
-  neighbors_.insert({n.id(),l});
-  AddLink(Link()) // TODO:add default link spec
+  neighbors_.emplace(n.id(),l);
+  AddLink(l);
+  AddNode(n);
 }
 
 void Node::AddLink(const Link &l){
-  links_.push_back(l);
+  links_.emplace(l.id(),l);
 }
 
 void Node::AddNode(const Node &n){
-  nodes_.push_back(n);
+  nodes_.emplace(n.id(), n);
 }
 std::string Node::id() const{
   return id_;
 }
-std::vector<links> Node::GetLinks(){
+std::map<std::string, const Link&> Node::GetLinks(){
   return links_;
 }
 
-std::vector<Node> Node::GetConnectedNodes(){
+std::map<std::string, const Node&> Node::GetConnectedNodes(){
   return nodes_;
 }
 
-virtual void Node::SendPacket(const &Link, const Packet, double) const{}
-virtual void Node::ReceivePacket(const Packet p, double){}
+void Node::SendPacket(const Node&, const Packet, double) const{}
+void Node::ReceivePacket(const Packet p, double){}
 
 
   

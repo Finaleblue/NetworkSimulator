@@ -18,22 +18,23 @@ class Packet;
 class Node{
   public: 
     Node(const std::string id);
-    void AddLink(Link&);
-    void AddNode(Node&);
+    void AddLink(const Link&);
+    void AddNode(const Node&);
+    void AddNeighbor(const Node&, const Link&);
     std::string id() const;
-    std::vector<Link> GetLinks();
-    std::vector<Node> GetConnectedNodes();
-    virtual void SendPacket(Link&, Packet, double);
-    virtual void RecievePacket(Packet, double);
+    std::map<std::string, const Link&> GetLinks();
+    std::map<std::string, const Node&> GetConnectedNodes();
+    void SendPacket(const Node&, const Packet, double) const;
+    void ReceivePacket(const Packet, double);
 
   protected:
     int bits_sent_=0;
     const std::string id_;
     double  time_=-1;
     //maps id of each device to the actual object
-    std::map<std::string, Link&> neighbors_; 
-    std::map<std::string, Node> nodes_;
-    std::map<std::string, Link> links_;
+    std::map<std::string, const Link&> neighbors_; 
+    std::map<std::string, const Node&> nodes_;
+    std::map<std::string, const Link&> links_;
     std::map<std::string, Packet> received_packets_;
     // bool routerorhostnode?
 };

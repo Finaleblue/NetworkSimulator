@@ -5,25 +5,26 @@ class Node;
 #include "packet.h"
 
 class Link{
+  public:
+    Link(const std::string, const Node&, const Node&, double, double, double);
+    bool isAvailable() const;
+    void ReceivePacket(const Packet, double) const;
+    void SendPacket(const Packet, double);
+    void DoneTransmitting();
+    double GetCost() const;
+    std::string id() const;
   private:
-    const std::string id_;
-    const double datarate_;
-    const double buffer_size_;
+    std::string id_;
+    double datarate_;
+    double buffer_size_;
     double occupancy_;
-    const double delay_;
+    double delay_;
     const Node& end1_;
     const Node& end2_;
     bool transmitting_ = false;
     Packet& packet_to_transmit_;
     int num_packs_in_buffer_ = 0; 
-    Packet buffer_[10];
-  public:
-    Link(std::string, Node&, Node&, double, double, double);
-    const bool isAvailable() const;
-    void ReceivePacket(const Node&, Packet, double, Node&);
-    void SendPacket(Packet, double);
-    void DoneTransmitting();
-    double GetCost() const;
+    const Packet buffer_[10];
      
 };
 #endif
