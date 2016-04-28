@@ -5,23 +5,23 @@
 #include <queue>
 #include <iostream>
 #include <fstream>
+#include "network.h"
+#include "event.h"
 //forward declaration
-class Event;
 class Flow;
 class Link;
 class Node;
-class Network;
 
 class EventManager{
   public:
     EventManager();
-    EventManager(Network);
     void log(std::string);
     void Setup();
     void Run();
     bool isDone() const;
     double global_time() const;
     void push(Event);
+    Network& Net();
 
   private:
     std::map<std::string, Flow> flows_;
@@ -30,6 +30,7 @@ class EventManager{
     std::string output_filename_="";
     std::ofstream out_file_;
     std::priority_queue<Event> queue_;
+    Network net;
     double global_time_ = 0;
     int finished_ = 0;
     bool done_=false;

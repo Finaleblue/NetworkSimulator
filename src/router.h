@@ -4,15 +4,17 @@
 class Network;
 class Packet;
 class Link;
+class EventManager;
 #include "node.h"
+#include "event_manager.h"
 #include <map>
 
-class EventManager;
 extern EventManager event_manager;
+
 class Router: public Node{
   public:
     Router(const std::string id);
-    void SendPacket(const Link &target, const Packet p, double time) const;
+    void SendPacket(Link &target, const Packet p, double time) const;
     void ReceivePacket(const Packet p, double time);
     bool allowedToTransmit();
     Link& GetRoute(std::string); // looks up the routing table and returns the link
@@ -20,7 +22,7 @@ class Router: public Node{
     void UpdateCost();
     void SendControl() const;
     void ReceiveControl(const Packet p);
-    std::map<std::string, double> RoutingVector();
+    std::map<std::string, double> RoutingVector() const;
   private:
     //each row represents each router's dist_ + cost_ vector
     std::map<const std::string, std::map<std::string, double> > routing_table_;
