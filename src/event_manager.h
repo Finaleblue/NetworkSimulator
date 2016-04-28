@@ -1,7 +1,7 @@
 #ifndef EVENT_MANAGER_H
 #define EVENT_MANAGER_H
 
-#include <vector>
+#include <map>
 #include <queue>
 #include <iostream>
 #include <fstream>
@@ -15,7 +15,7 @@ class Network;
 class EventManager{
   public:
     EventManager();
-    EventManager(std::string, Network);
+    EventManager(Network);
     void log(std::string);
     void Setup();
     void Run();
@@ -24,9 +24,9 @@ class EventManager{
     void push(Event);
 
   private:
-    std::vector<Flow> flows_;
-    std::vector<Link> links_;
-    std::vector<Node> devices_;
+    std::map<std::string, Flow> flows_;
+    std::map<std::string, Link> links_;
+    std::map<std::string, Node> devices_;
     std::string output_filename_="";
     std::ofstream out_file_;
     std::priority_queue<Event> queue_;

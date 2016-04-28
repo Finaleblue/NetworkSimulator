@@ -5,22 +5,23 @@
 #include <string>
 #include <sstream>
 #include "packet.h"
+#include "global.h"
 
 Packet::Packet(const std::string id, const Node& src, const Node& dst):
   id_(id),
   type_(id[0]),
   origin_(src),
   dest_(dst),
-  seq_num_(atoi(id.substr(1))){}
+  size_(global::PacketSize(type_)),
+  seq_(std::stoi(id.substr(1))){}
 
-Packet::Packet(const std::string type, int seq, const Node& src, const Node& dst):{
-  sstream out << seq;
-  id_ = type + out.str();
-  type_ = type;
-  seq_ = seq;
-  src_ = src;
-  dst_ = dst;
-}
+Packet::Packet(const std::string type, int seq, const Node& src, const Node& dst):
+  id_(type + std::to_string(seq)),
+  type_(type),
+  seq_(seq),
+  src_(src),
+  size_(global::PacketSize(type_)),
+  dst_(dst){}
 
 Node& Packet::GetSrc() const{
   return src_;

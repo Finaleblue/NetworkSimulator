@@ -8,9 +8,11 @@
 #include "link.h"
 #include "global.h"
 
-EventManager::EventManager(std::string outfile, Network &net) : 
+EventManager::EventManager(){}
+
+EventManager::EventManager(Network net) : 
   flows_(net.GetFlows()), links_(net.GetLinks()), devices_(net.GetDevices()){
-  output_filename_ = outfile;
+  output_filename_ = "./out.txt";
   global_time_ = 0;
 }
 
