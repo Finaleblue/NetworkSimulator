@@ -22,26 +22,22 @@ bool Link::isAvailable() const{
 }
 
 bool Link::ReceivePacket(Node& send_to, Packet p, double t){
-  std::cout<<"link flag1"<<std::endl;
+  //std::cout<<"link flag1"<<std::endl;
   if (transmitting_) {
-    buffer_.push(p);
+    buffer_.push({p,send_to});
     ++num_packs_in_buffer_;
     return true;
   }
   else{
-    return SendPacket(send_to, p, t + delay_); //TODO: take datarate into account
     transmitting_ = true;
+    return SendPacket(send_to, p, t + delay_); //TODO: take datarate into account
   }
 }
 
 bool Link::SendPacket(Node& send_to, Packet p, double t){
-  std::cout<<"link flag2"<<std::endl;
+  //std::cout<<"link flag2"<<std::endl;
   event_manager.push(std::shared_ptr<ReceivePacketEvent>(new ReceivePacketEvent(send_to, p, t)));
   return true;
-}
-
-void Link::DoneTransmitting(){
-  transmitting_ = false;
 }
 
 double Link::GetCost() const{
@@ -55,4 +51,13 @@ std::string Link::id() const{
 Node& Link::GetConnectedNode(Node &n) const{
   if (n == end1_){return end2_;}
   else  {return end1_;}
+}
+
+void Link::flush(double t){
+  transmitting_ = false;
+  if (!buffer_.empty()){
+    std::pair<Packet, Node&> p = buffer_.front();
+    buffer_.pop();
+    SendPacket(p.second, p.first, t);
+  }
 }

@@ -123,7 +123,7 @@ void parseInputs(const std::string inputFile) {
         const rapidjson::Value& clink = links[i];
         net.AddLink(clink["id"].GetString(), clink["endpoints"][0].GetString(), 
                     clink["endpoints"][1].GetString(), clink["rate"].GetDouble(), 
-                    clink["delay"].GetDouble(), clink["buffer"].GetDouble());
+                    clink["buffer"].GetDouble(), clink["delay"].GetDouble());
         #ifndef NDEBUG
           debugSS <<"Added Link " << clink["id"].GetString() << std::endl;
         #endif

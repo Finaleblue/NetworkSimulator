@@ -17,6 +17,10 @@ class Network{
     std::map<std::string, Link> GetLinks() const;
     std::map<std::string, Router> GetRouters() const;
     std::map<std::string, Host> GetHosts() const;
+    Link& GetLink(std::string);
+    Router& GetRouter(std::string);
+    Host& GetHost(std::string);
+    Node& GetNode(std::string);
   private:
     std::map<std::string, Flow> flows_;
     std::map<std::string, Link> links_;

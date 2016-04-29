@@ -64,4 +64,19 @@ std::map<std::string, Host> Network::GetHosts() const{
   return hosts_;
 }
 
+Link& Network::GetLink(std::string lid){
+  return links_.at(lid);
+}
 
+Host& Network::GetHost(std::string hid){
+  return hosts_.at(hid);
+}
+
+Router& Network::GetRouter(std::string rid){
+  return routers_.at(rid);
+}
+
+Node& Network::GetNode(std::string nid){
+  if (nid[0] == 'H'){return GetHost(nid);}
+  else  {return GetRouter(nid);}
+}

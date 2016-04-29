@@ -29,17 +29,23 @@ void Flow::Pack(){
   int data = size_;
   int i=1;
   while (data > 0){
-    packets_.push_back(Packet("D",i,src_, dst_));
+    packets_.push_back(Packet('D',i,src_, dst_));
     ++i;
     data -= global::DATA_PACKET_SIZE;
   }
   num_packs_ = packets_.size();
+  std::cout<<"total packets: "<<num_packs_<<std::endl;
 }
 
 bool Flow::Start(double t){
-  std::cout<<"flow starts now"<<std::endl;
-  event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_[pack_to_send], t))); 
-  return true;
+  //std::cout<<"flow starts now"<<std::endl;
+  if (pack_to_send >= num_packs_)  {return true;}
+  else{
+    event_manager.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(*this, t+5)));
+    event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_[pack_to_send], t))); 
+    ++pack_to_send;
+    return true;
+  }
 }
 
 std::string Flow::id() const{

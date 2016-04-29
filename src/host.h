@@ -7,7 +7,7 @@ class Host: public Node{
   public:
     Host(const std::string id);
     virtual bool SendPacket(Packet, double);
-    virtual bool RecievePacket(Packet, double);
+    virtual bool ReceivePacket(Packet, double);
     bool allowedToTransmit() const;
 };
 #endif

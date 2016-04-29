@@ -33,13 +33,6 @@ void Node::AddNode(Node &n){
 std::string Node::id() const{
   return id_;
 }
-std::map<std::string, Link&> Node::GetLinks(){
-  return links_;
-}
-
-std::map<std::string, Node&> Node::GetConnectedNodes(){
-  return nodes_;
-}
 
 bool Node::SendPacket(Packet, double){std::cout<<"node flag"<<std::endl;}
 bool Node::ReceivePacket(Packet, double){}

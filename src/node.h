@@ -17,19 +17,17 @@ class Packet;
 
 class Node{
   public: 
+    Node(std::string id);
     bool operator == (const Node&) const;
     virtual ~Node();
     void AddLink(Link&);
     void AddNode(Node&);
     void AddNeighbor(Link&, Node&);
     std::string id() const;
-    std::map<std::string, std::string> GetLinks();
-    std::map<std::string, std::string> GetConnectedNodes();
     virtual bool SendPacket(Packet, double);
     virtual bool ReceivePacket(Packet, double);
 
   protected:
-    Node(std::string id);
     int bits_sent_=0;
     std::string id_;
     double  time_=-1;

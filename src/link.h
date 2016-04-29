@@ -15,6 +15,7 @@ class Link{
     double GetCost() const;
     std::string id() const;
     Node& GetConnectedNode(Node&) const;
+    void flush(double);
   private:
     std::string id_;
     double datarate_;
@@ -25,7 +26,7 @@ class Link{
     Node& end2_;
     bool transmitting_ = false;
     int num_packs_in_buffer_ = 0; 
-    std::queue<Packet> buffer_;
+    std::queue<std::pair<Packet,Node&> > buffer_;
      
 };
 #endif

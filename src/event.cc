@@ -4,15 +4,18 @@
 #include "link.h"
 #include "node.h"
 #include "packet.h"
+#include "event_manager.h"
+
+extern EventManager event_manager;
 
 Event::Event(double t): schedule_at_(t){}
 Event::~Event(){}
 
 bool Event::operator < (const Event& e) const{
-  return (*this).schedule_at_ < e.schedule_at_;
+  return (*this).schedule_at_ > e.schedule_at_;
 }
 bool Event::operator > (const Event& e) const{
-  return (*this).schedule_at_ > e.schedule_at_;
+  return (*this).schedule_at_ < e.schedule_at_;
 }
 bool Event::operator == (const Event& e) const{
   return (*this).schedule_at_ == e.schedule_at_;
@@ -33,7 +36,11 @@ ReceivePacketEvent::ReceivePacketEvent(Node &target, Packet p, double t)
 
 
 bool ReceivePacketEvent::Start(){
-  std::cout<<target_.id()<<" received Packet "<<packet_to_receive_.id()<<" From "<<packet_to_receive_.GetSrc().id()<<std::endl;
+  std::cout<<"@time: "<<schedule_at_<<", "
+           <<target_.id()<<" received Packet "
+           <<packet_to_receive_.id()<<" From "
+           <<packet_to_receive_.GetSrc().id()<<std::endl;
+
   return target_.ReceivePacket(packet_to_receive_, schedule_at_);
 }
 
@@ -41,7 +48,8 @@ TransmitPacketEvent::TransmitPacketEvent(Link &target, Node& next, Packet p, dou
   :target_(target), packet_to_send_(p), next_(next), Event(t){}
 
 bool TransmitPacketEvent::Start(){
-  std::cout<<target_.id()<<" is transmitting"<<std::endl;
+  std::cout<<"@time: "<<schedule_at_<<", "
+           <<target_.id()<<" is transmitting"<<std::endl;
   return target_.ReceivePacket(next_, packet_to_send_, schedule_at_);
 }
 
@@ -65,6 +73,10 @@ SendPacketEvent::SendPacketEvent(Node &target, Packet p, double t)
 
 
 bool SendPacketEvent::Start(){
-  std::cout<<target_.id() <<" sent packet "<<packet_to_send_.id()<< " to " << packet_to_send_.GetDst().id()<<std::endl;
+  std::cout<<"@time: "<<schedule_at_<<", "
+           <<target_.id() <<" sent packet "
+           <<packet_to_send_.id()<< " to " 
+           << packet_to_send_.GetDst().id()<<std::endl;
+
   return target_.SendPacket(packet_to_send_, schedule_at_);
 }
