@@ -5,7 +5,7 @@
  * @author Eui Han
  * @version 0.1 04/05/16
  */
-
+#include <iostream>
 #include "node.h"
 #include "packet.h"
 #include "link.h"
@@ -13,18 +13,22 @@
 Node::Node(const std::string id) : id_(id){}
 Node::~Node(){}
 
-void Node::AddNeighbor(Node &n, Link &l){
-  neighbors_.insert({n.id(),l});
+bool Node::operator == (const Node& n) const{
+  return n.id() == (*this).id();
+}
+
+void Node::AddNeighbor(Link &l, Node &n){
+  neighbors_.insert({l.id(),n.id()});
   AddLink(l);
   AddNode(n);
 }
 
 void Node::AddLink(Link &l){
-  links_.emplace(l.id(),l);
+  links_.push_back(l.id());
 }
 
 void Node::AddNode(Node &n){
-  nodes_.emplace(n.id(), n);
+  nodes_.push_back(n.id());
 }
 std::string Node::id() const{
   return id_;
@@ -37,7 +41,7 @@ std::map<std::string, Node&> Node::GetConnectedNodes(){
   return nodes_;
 }
 
-void Node::SendPacket(Packet, double) const{}
-void Node::ReceivePacket(Packet, double){}
+bool Node::SendPacket(Packet, double){std::cout<<"node flag"<<std::endl;}
+bool Node::ReceivePacket(Packet, double){}
 
   

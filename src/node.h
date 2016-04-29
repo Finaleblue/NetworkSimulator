@@ -17,25 +17,26 @@ class Packet;
 
 class Node{
   public: 
-    Node(std::string id);
+    bool operator == (const Node&) const;
     virtual ~Node();
     void AddLink(Link&);
     void AddNode(Node&);
-    void AddNeighbor(Node&, Link&);
+    void AddNeighbor(Link&, Node&);
     std::string id() const;
-    std::map<std::string, Link&> GetLinks();
-    std::map<std::string, Node&> GetConnectedNodes();
-    virtual void SendPacket(Packet, double) const;
-    virtual void ReceivePacket(Packet, double);
+    std::map<std::string, std::string> GetLinks();
+    std::map<std::string, std::string> GetConnectedNodes();
+    virtual bool SendPacket(Packet, double);
+    virtual bool ReceivePacket(Packet, double);
 
   protected:
+    Node(std::string id);
     int bits_sent_=0;
     std::string id_;
     double  time_=-1;
     //maps id of each device to the actual object
-    std::map<std::string, Link&> neighbors_; 
-    std::map<std::string, Node&> nodes_;
-    std::map<std::string, Link&> links_;
+    std::map<std::string, std::string> neighbors_; //map <link id, node id>
+    std::vector<std::string> nodes_; //vector <node id> 
+    std::vector<std::string> links_; //vector <link id>
     std::vector<Packet> received_packets_;
     // bool routerorhostnode?
 };

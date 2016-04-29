@@ -5,8 +5,10 @@
 #include <queue>
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include "network.h"
 #include "event.h"
+
 //forward declaration
 class Flow;
 class Link;
@@ -19,19 +21,21 @@ class EventManager{
     void Setup();
     void Run();
     bool isDone() const;
-    double global_time() const;
-    void push(Event);
+    void push(std::shared_ptr<Event>);
     Network& Net();
+    double time();
+    int queue_size();
 
   private:
+    std::priority_queue<std::shared_ptr<Event> > queue_;
     std::map<std::string, Flow> flows_;
     std::map<std::string, Link> links_;
-    std::map<std::string, Node> devices_;
+    std::map<std::string, Router> routers_;
+    std::map<std::string, Host> hosts_;
     std::string output_filename_="";
     std::ofstream out_file_;
-    std::priority_queue<Event> queue_;
     Network net_;
-    double global_time_ = 0;
+    double time_ = 0;
     int finished_ = 0;
     bool done_=false;
 };

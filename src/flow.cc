@@ -1,8 +1,13 @@
+#include <iostream>
+#include <memory>
 #include "flow.h"
+#include "global.h"
 #include "packet.h"
 #include "host.h"
-#include "global.h"
+#include "event.h"
 #include "event_manager.h"
+
+extern EventManager event_manager;
 
 Flow::Flow(std::string id, double start_time, int size, Host& src, 
            Host& dst, std::string protocol):
@@ -31,8 +36,10 @@ void Flow::Pack(){
   num_packs_ = packets_.size();
 }
 
-void Flow::Start(double t){
-  event_manager.push(SendPacketEvent(src_, packets_[pack_to_send], t)); 
+bool Flow::Start(double t){
+  std::cout<<"flow starts now"<<std::endl;
+  event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_[pack_to_send], t))); 
+  return true;
 }
 
 std::string Flow::id() const{

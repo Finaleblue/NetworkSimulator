@@ -1,19 +1,24 @@
+#include <memory>
 #include "router.h"
-#include "event_manager.h"
 #include "event.h"
+#include "event_manager.h"
+
+extern EventManager event_manager;
 
 Router::Router(const std::string id): Node(id){}
 
-void Router::SendPacket(Link& target, const Packet p, double time) const{
-  event_manager.push(TransmitPacketEvent(target, p, time));
+bool Router::SendPacket(Packet p, double t) {
+  Link& l = GetRoute(p.GetDst().id());
+  event_manager.push(std::shared_ptr<Event>(new TransmitPacketEvent(l, l.GetConnectedNode(*this), p, t)));
+  return true;
 }
 
-void Router::ReceivePacket(const Packet p, double time){
+bool Router::ReceivePacket(Packet p, double time){
   if (p.type() == "C"){ //if the received packet is control type
-    ReceiveControl(p);
+    return ReceiveControl(p);
   }
   else{
-    SendPacket(GetRoute(p.GetDst().id()), p, time);
+    return SendPacket(p, time);
   }
 } 
 
@@ -27,7 +32,7 @@ Link& Router::GetRoute(std::string host_id){
 
 //separate vectors for router and host?
 void Router::UpdateTable(std::string router_id){
-  routing_table_.at(router_id) = dynamic_cast<const Router&>(Node::nodes_.at(router_id)).RoutingVector();
+  routing_table_.at(router_id) = dynamic_cast<Router&>(Node::nodes_.at(router_id)).RoutingVector();
   UpdateCost();
 }
 
@@ -47,16 +52,18 @@ void Router::UpdateCost(){ // updates cost vector every time step
   }
 }
 
-void Router::SendControl() const{
+bool Router::SendControl(){
   int i = 0;
   for(auto &node : nodes_){
-    event_manager.push(ReceivePacketEvent(node.second, Packet("C", i, *this, node.second), event_manager.global_time()));
+    event_manager.push(std::shared_ptr<Event>(new ReceivePacketEvent(node.second, Packet("C", i, *this, node.second), event_manager.time())));
     ++i;
   }
+  return true;
 }
 
-void Router::ReceiveControl(const Packet p){
+bool Router::ReceiveControl(Packet p){
   UpdateTable(p.GetSrc().id());
+  return true;
 }
 
 std::map<std::string, double> Router::RoutingVector() const{

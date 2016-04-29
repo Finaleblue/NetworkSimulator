@@ -200,6 +200,12 @@ int main(int argc, char *argv[]) {
     debugSS << "Loaded Network Topology." << std::endl;
   #endif
   event_manager.Setup();
+  
+  //debugSS<<"queue size seen from main: "<<event_manager.queue_size()<<std::endl;
+  event_manager.Run();
+  //debugSS<<"queue size seen from main: "<<event_manager.queue_size()<<std::endl;
+  //event_manager.Run();
+  //debugSS<<"queue size seen from main: "<<event_manager.queue_size()<<std::endl;
   //EventManager event_manager("./out.txt", net);
   //EventManager eveman("./out.txt", net);
   //globall::simulator = eveman;

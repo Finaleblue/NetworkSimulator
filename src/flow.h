@@ -6,14 +6,12 @@
 
 class Host;
 class Packet;
-class EventManager;
 
-extern EventManager event_manager;
 class Flow{
   public:
     Flow(std::string id, double start_time, int size, 
          Host& src, Host& dst, std::string protocol);
-    void Start(double t); //start the flow by sending packets
+    bool Start(double t); //start the flow by sending packets
     void Pack(); //slice data into packets
     double GetStartTime() const;   
     std::string id() const;

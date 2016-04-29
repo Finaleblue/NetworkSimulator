@@ -2,7 +2,6 @@
 #define NETWORK_H_
 
 #include <map>
-#include "global.h"
 #include "host.h"
 #include "router.h"
 #include "link.h"
@@ -16,11 +15,13 @@ class Network{
     void AddFlow(std::string id, double start_time, int size, std::string src_id, std::string dst_id, std::string);
     std::map<std::string, Flow> GetFlows() const;
     std::map<std::string, Link> GetLinks() const;
-    std::map<std::string, Node> GetDevices() const;
+    std::map<std::string, Router> GetRouters() const;
+    std::map<std::string, Host> GetHosts() const;
   private:
     std::map<std::string, Flow> flows_;
     std::map<std::string, Link> links_;
-    std::map<std::string, Node> devices_;
+    std::map<std::string, Router> routers_;
+    std::map<std::string, Host> hosts_;
 };
 
 #endif

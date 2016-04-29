@@ -1,7 +1,11 @@
+#include <iostream>
+#include <memory>
 #include "link.h"
 #include "node.h"
-#include "global.h"
+#include "event.h"
 #include "event_manager.h"
+
+extern EventManager event_manager;
 
 Link::Link(std::string id, Node& end1, Node& end2, 
            double datarate, double buffer_size, double delay):
@@ -9,26 +13,31 @@ Link::Link(std::string id, Node& end1, Node& end2,
   datarate_(datarate),
   buffer_size_(buffer_size),
   end1_(end1), end2_(end2),
-  delay_(delay)
+  delay_(delay),
+  transmitting_(false)
 {}
 
 bool Link::isAvailable() const{
   return buffer_size_ == num_packs_in_buffer_;
 }
 
-void Link::ReceivePacket(Node& send_to, Packet p, double t){
+bool Link::ReceivePacket(Node& send_to, Packet p, double t){
+  std::cout<<"link flag1"<<std::endl;
   if (transmitting_) {
     buffer_.push(p);
     ++num_packs_in_buffer_;
+    return true;
   }
   else{
-    SendPacket(send_to, p, t + delay_); //TODO: take datarate into account
+    return SendPacket(send_to, p, t + delay_); //TODO: take datarate into account
     transmitting_ = true;
   }
 }
 
-void Link::SendPacket(Node& send_to, Packet p, double t){
-  event_manager.push(ReceivePacketEvent(send_to, p, t));
+bool Link::SendPacket(Node& send_to, Packet p, double t){
+  std::cout<<"link flag2"<<std::endl;
+  event_manager.push(std::shared_ptr<ReceivePacketEvent>(new ReceivePacketEvent(send_to, p, t)));
+  return true;
 }
 
 void Link::DoneTransmitting(){
@@ -41,4 +50,9 @@ double Link::GetCost() const{
 
 std::string Link::id() const{
   return id_;
+}
+
+Node& Link::GetConnectedNode(Node &n) const{
+  if (n == end1_){return end2_;}
+  else  {return end1_;}
 }

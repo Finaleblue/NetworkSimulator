@@ -1,26 +1,26 @@
 #include <iostream>
+#include <memory>
 #include "host.h"
-#include "event_manager.h"
 #include "link.h"
 #include "event.h"
+#include "event_manager.h"
 
-
+extern EventManager event_manager;
 
 Host::Host(std::string id) : Node::Node(id){}
 
-void Host::SendPacket(Packet p, double t){
+bool Host::SendPacket(Packet p, double t){
   for(auto &l : links_){
-    for(auto &n : nodes_){
-      event_manager.push(TransmitPacketEvent(l.second, n.second, p, t));
-      break; //break because there is only one node
-    }
-    break; //break because there is only one link for host
+    event_manager.push(std::shared_ptr<TransmitPacketEvent>(new TransmitPacketEvent(l.second, neighbors_.at(l.first), p, t)));
+    std::cout<<"host flag "<<l.second.id()<<std::endl;
+    return true;
   }
+  return true;
 }
 
-void Host::RecievePacket(Packet p, double t){
+bool Host::RecievePacket(Packet p, double t){
   received_packets_.push_back(p);
-  SendPacket(Packet("A",p.seqNum(), *this, p.GetSrc()),t);
+  return SendPacket(Packet("A",p.seqNum(), *this, p.GetSrc()),t);
 } 
 
 bool Host::allowedToTransmit() const{

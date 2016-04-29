@@ -1,22 +1,21 @@
 #include <vector>
 #include <string>
 #include <iostream>
-void printint(std::string);
 class A{
       public:
-        std::vector<std::string>& GetVec(){return vec;}
-      private:
-        std::vector<std::string> vec;
+        virtual void do();
     };
 
-class B{
+class B : public A{
       public:
         //constructor
-        B(A& a) : vec_ref(a.GetVec()){}
-      private:
-        std::vector<std::string>& vec_ref;
+        void do(){
+          std::cout<<"do A"<<std::end;
+        }
      };
 
+class C{
+}
 int main(){
   A a;
   B b(a);
