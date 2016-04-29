@@ -17,15 +17,15 @@ bool Host::SendPacket(Packet p, double t){
 }
 
 bool Host::ReceivePacket(Packet p, double t){
+  event_manager.Net().GetLink(links_[0]).flush(t);
   if(p.type() == 'D'){ //only execute this when the received packet is a data packet
     received_packets_.push_back(p);
-    event_manager.Net().GetLink(links_[0]).flush(t);
     return SendPacket(Packet('A',p.seqNum(), *this, p.GetSrc()),t);
   }
   //TODO: implement case when it receives ACK and CTRL Packages
 } 
 
-bool Host::allowedToTransmit() const{
+bol Host::allowedToTransmit() const{
   //return links_[0].isAvailable();
   return true;
 }
