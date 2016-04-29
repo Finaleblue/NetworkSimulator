@@ -26,20 +26,20 @@ void Event::Start(){}
 
 
 
-ReceivePacketEvent::ReceivePacketEvent(Node &target, const Packet p, double t)
+ReceivePacketEvent::ReceivePacketEvent(Node &target, Packet p, double t)
   :Event(t), target_(target), packet_to_receive_(p){}
 
 
 void ReceivePacketEvent::Start(){
-  std::cout<<"Packet Received"<<std::endl;
+  std::cout<<target_.id()<<" received Packet "<<packet_to_receive_.id()<<" From "<<packet_to_receive_.GetSrc().id()<<std::endl;
   target_.ReceivePacket(packet_to_receive_, schedule_at_);
 }
 
-TransmitPacketEvent::TransmitPacketEvent(Link &target, const Packet p, double t)
-  :target_(target), packet_to_send_(p), Event(t){}
+TransmitPacketEvent::TransmitPacketEvent(Link &target, Node& next, Packet p, double t)
+  :target_(target), packet_to_send_(p), next_(next), Event(t){}
 
 void TransmitPacketEvent::Start(){
-  target_.ReceivePacket(packet_to_send_, schedule_at_);
+  target_.ReceivePacket(next_, packet_to_send_, schedule_at_);
 }
 
 FlowEndEvent::FlowEndEvent(Flow &f, double t)
@@ -54,13 +54,14 @@ FlowStartEvent::FlowStartEvent(Flow &f, double t)
   : flow_to_start_(f), Event(t){}
 
 void FlowStartEvent::Start(){
-  //flow_to_start_.Start();
+  flow_to_start_.Start(schedule_at_);
 }
 
-SendPacketEvent::SendPacketEvent(Node &target, const Packet p, double t)
+SendPacketEvent::SendPacketEvent(Node &target, Packet p, double t)
   :target_(target), packet_to_send_(p), Event(t){}
 
 
 void SendPacketEvent::Start(){
-  target_.SendPacket(target_, packet_to_send_, schedule_at_);
+  std::cout<<target_.id() <<"sent packet "<<packet_to_send_.id()<< " to " << packet_to_send_.GetDst().id()<<std::endl;
+  target_.SendPacket(packet_to_send_, schedule_at_);
 }

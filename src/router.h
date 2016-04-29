@@ -6,7 +6,6 @@ class Packet;
 class Link;
 class EventManager;
 #include "node.h"
-#include "event_manager.h"
 #include <map>
 
 extern EventManager event_manager;

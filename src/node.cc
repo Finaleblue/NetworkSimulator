@@ -37,7 +37,7 @@ std::map<std::string, Node&> Node::GetConnectedNodes(){
   return nodes_;
 }
 
-void Node::SendPacket(Node&, const Packet, double) const{}
-void Node::ReceivePacket(const Packet, double){}
+void Node::SendPacket(Packet, double) const{}
+void Node::ReceivePacket(Packet, double){}
 
   

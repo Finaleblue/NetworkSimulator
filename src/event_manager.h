@@ -30,9 +30,9 @@ class EventManager{
     std::string output_filename_="";
     std::ofstream out_file_;
     std::priority_queue<Event> queue_;
-    Network net;
+    Network net_;
     double global_time_ = 0;
     int finished_ = 0;
     bool done_=false;
-  };
+};
 #endif

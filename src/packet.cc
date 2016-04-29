@@ -7,35 +7,35 @@
 #include "packet.h"
 #include "global.h"
 
-Packet::Packet(std::string id, const Node& src, const Node& dst) :
+Packet::Packet(std::string id, Node& src, Node& dst) :
   id_(id), type_(ToType(id)), src_(src), seq_(ToSeq(id)), size_(global::PacketSize(type_)), dst_(dst)
 {}
 
-Packet::Packet(std::string type, int seq, const Node& src, const Node& dst):
+Packet::Packet(std::string type, int seq, Node& src, Node& dst):
   id_(type + std::to_string(seq)), type_(type), seq_(seq), src_(src), size_(global::PacketSize(type_)), dst_(dst)
 {}
 
-const Node& Packet::GetSrc() const{
+Node& Packet::GetSrc() const{
   return src_;
 }
 
-const std::string Packet::id() const{
+std::string Packet::id() const{
   return id_;
 }
 
-const Node& Packet::GetDst() const{
+Node& Packet::GetDst() const{
   return dst_;
 }
 
-const int Packet::size() const{
+int Packet::size() const{
   return size_;
 }
 
-const int Packet::seqNum() const{
+int Packet::seqNum() const{
   return seq_;
 }
 
-const std::string Packet::type() const{
+std::string Packet::type() const{
   return type_;
 }
 

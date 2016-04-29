@@ -7,21 +7,21 @@ class Node;
 
 class Link{
   public:
-    Link(const std::string, const Node&, const Node&, double, double, double);
+    Link(std::string, Node&, Node&, double, double, double);
     bool isAvailable() const;
-    void ReceivePacket(const Packet, double);
-    void SendPacket(const Packet, double);
+    void ReceivePacket(Node&, Packet, double);
+    void SendPacket(Node&, Packet, double);
     void DoneTransmitting();
     double GetCost() const;
     std::string id() const;
   private:
-    const std::string id_;
-    const double datarate_;
-    const double buffer_size_;
+    std::string id_;
+    double datarate_;
+    double buffer_size_;
     double occupancy_;
-    const double delay_;
-    const Node& end1_;
-    const Node& end2_;
+    double delay_;
+    Node& end1_;
+    Node& end2_;
     bool transmitting_ = false;
     int num_packs_in_buffer_ = 0; 
     std::queue<Packet> buffer_;

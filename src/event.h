@@ -22,7 +22,7 @@ class Event{
 
 class ReceivePacketEvent: public Event{
   public:
-    ReceivePacketEvent(Node&, const Packet, double);
+    ReceivePacketEvent(Node&, Packet, double);
     void Start();
   private:
     Node& target_;
@@ -31,11 +31,12 @@ class ReceivePacketEvent: public Event{
 
 class TransmitPacketEvent: public Event{
   public:
-    TransmitPacketEvent(Link&, const Packet, double);
+    TransmitPacketEvent(Link&, Node&, Packet, double);
     void Start();
   private:
     Link& target_;
-    const Packet packet_to_send_;
+    Node& next_;
+    Packet packet_to_send_;
 };
 
 class FlowEndEvent: public Event{
@@ -56,10 +57,10 @@ class FlowStartEvent: public Event{
 
 class SendPacketEvent: public Event{
   public:
-    SendPacketEvent(Node&, const Packet, double);
+    SendPacketEvent(Node&, Packet, double);
     void Start();
   private:
     Node& target_;
-    const Packet packet_to_send_;
+    Packet packet_to_send_;
 };
 #endif

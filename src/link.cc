@@ -1,8 +1,9 @@
 #include "link.h"
 #include "node.h"
 #include "global.h"
+#include "event_manager.h"
 
-Link::Link(const std::string id, const Node& end1, const Node& end2, 
+Link::Link(std::string id, Node& end1, Node& end2, 
            double datarate, double buffer_size, double delay):
   id_(id),
   datarate_(datarate),
@@ -15,19 +16,19 @@ bool Link::isAvailable() const{
   return buffer_size_ == num_packs_in_buffer_;
 }
 
-void Link::ReceivePacket(const Packet p, double t){
+void Link::ReceivePacket(Node& send_to, Packet p, double t){
   if (transmitting_) {
     buffer_.push(p);
     ++num_packs_in_buffer_;
   }
   else{
-    SendPacket(p, t + delay_);
+    SendPacket(send_to, p, t + delay_); //TODO: take datarate into account
     transmitting_ = true;
   }
 }
 
-void Link::SendPacket(const Packet p, double t){
-  //to.eeceivePacket(p,t);
+void Link::SendPacket(Node& send_to, Packet p, double t){
+  event_manager.push(ReceivePacketEvent(send_to, p, t));
 }
 
 void Link::DoneTransmitting(){

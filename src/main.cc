@@ -7,9 +7,10 @@
  * @version 0.3.0 04/26/16
  */
 
-//#define NDEBUG // Comment out to turn on debug information and assertions
+#define NDEBUG // Comment out to turn on debug information and assertions
 
 #include "event_manager.h"
+#include <cassert>
 #include <cstdio>
 #include <string>
 #include <iostream>
@@ -56,7 +57,7 @@ void parseInputs(const std::string inputFile) {
     rapidjson::StringBuffer buffer;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
     root.Accept(writer);
-    debugSS << "Original JSON:\n" << buffer.GetString()<<"\n\n" << std::endl;
+    debugSS << "Original JSON:\n" << buffer.GetString() << std::endl;
   }
 //		if (root.ParseStream(json).HasParseError()) {
 //			fprintf(errorSS, "\nError(offset %u): %s\n", 
@@ -69,27 +70,27 @@ void parseInputs(const std::string inputFile) {
 //		return -1;
 //	}
   #ifndef NDEBUG
-    debugSS<< "Parsing to root succeeded." << std::endl;
+    debugSS<< "Parsing to root succeeded." <<"\n\n" << std::endl;
   #endif
+    rapidjson::Value::MemberIterator itr;
 
     {
 	
-      rapidjson::Value::MemberIterator end = root.FindMember("end"); // assert(root.HasMember("hosts")); // Old version
-      float endtime = (end != root.MemberEnd()) ? end->value.GetDouble() : 0;
-      global::MAX_SIMULATION_TIME = endtime;
+      itr = root.FindMember("end"); // assert(root.HasMember("hosts")); // Old version
+      global::MAX_SIMULATION_TIME = (itr != root.MemberEnd()) ? itr->value.GetDouble() : 10;
       #ifndef NDEBUG
-        debugSS << "Set end time of simulator: " << endtime << std::endl;
+        debugSS << "Set end time of simulator: " << global::MAX_SIMULATION_TIME << std::endl;
       #endif	
     }	
 
     {
+      assert(root.HasMember("hosts"));
       const rapidjson::Value& hosts = root["hosts"]; 
-
       for (rapidjson::SizeType i = 0; i < hosts.Size(); ++i) {
         const rapidjson::Value& chosts = hosts[i];
-        //net.AddHost(chosts["id"].GetString()); 
+        net.AddHost(chosts.GetString()); 
         #ifndef NDEBUG
-          debugSS << "Added Host " << chosts["id"].GetString() << std::endl;;
+          debugSS << "Added Host " << chosts.GetString() << std::endl;
         #endif
       }
     }
@@ -103,9 +104,9 @@ void parseInputs(const std::string inputFile) {
 
       for (rapidjson::SizeType i = 0; i < routers.Size(); ++i) {
         const rapidjson::Value& crouter = routers[i];
-        //net.AddRouter(crouter["id"].GetString());
+        net.AddRouter(crouter.GetString());
         #ifndef NDEBUG
-          debugSS << "Added Router " << crouter["id"].GetString() << std::endl;
+          debugSS << "Added Router " << crouter.GetString() << std::endl;
         #endif
       }
     }
@@ -120,8 +121,9 @@ void parseInputs(const std::string inputFile) {
 
       for (rapidjson::SizeType i = 0; i < links.Size(); ++i) {
         const rapidjson::Value& clink = links[i];
-        //net.AddLink(clink["id"].GetString(), clink["node_id1"].GetString(), clink["node_id2"].GetString(), 
-         //           clink["rate"].GetDouble(), clink["delay"].GetDouble(), clink["buffer"].GetDouble());
+        net.AddLink(clink["id"].GetString(), clink["endpoints"][0].GetString(), 
+                    clink["endpoints"][1].GetString(), clink["rate"].GetDouble(), 
+                    clink["delay"].GetDouble(), clink["buffer"].GetDouble());
         #ifndef NDEBUG
           debugSS <<"Added Link " << clink["id"].GetString() << std::endl;
         #endif
@@ -138,22 +140,9 @@ void parseInputs(const std::string inputFile) {
       std::string tcp_enum;
       for (rapidjson::SizeType i = 0; i < flows.Size(); ++i) {
         const rapidjson::Value& cflow = flows[i];
-        if (cflow.HasMember("TCP")) {
-          std::string tcp_string = cflow["TCP"].GetString();
-          std::transform(tcp_string.begin(), tcp_string.end(), tcp_string.begin(), ::toupper);
-          if (tcp_string == "TAHOE") {
-            tcp_enum = "TAHOE";
-          }
-          else if (tcp_string == "RENO") {
-            tcp_enum = "RENO";
-          }
-	}
-        else {
-          tcp_enum = "TAHOE";
-        }
-        //net.AddFlow(cflow["id"].GetString(), cflow["start_time"].GetDouble(), 
-         //           cflow["data_size"].GetDouble(), cflow["node_src"].GetString(), 
-          //          cflow["node_dst"].GetString(), tcp_enum);
+        net.AddFlow(cflow["id"].GetString(), cflow["start"].GetDouble(), 
+                    cflow["size"].GetInt(), cflow["src"].GetString(), 
+                    cflow["dst"].GetString(), cflow["protocol"].GetString());
         #ifndef NDEBUG
           debugSS << "Added Flow " << cflow["id"].GetString() << std::endl;
         #endif
@@ -200,6 +189,7 @@ int main(int argc, char *argv[]) {
 */
   inputFile = "./input/test_case_0.json";
   outputFile = "./output.csv";
+  parseInputs(inputFile);
 	// Create Network Simulator object 
   #ifndef NDEBUG
     debugSS << "Created Network Simulator object." << std::endl;
@@ -209,6 +199,7 @@ int main(int argc, char *argv[]) {
   #ifndef NDEBUG
     debugSS << "Loaded Network Topology." << std::endl;
   #endif
+  event_manager.Setup();
   //EventManager event_manager("./out.txt", net);
   //EventManager eveman("./out.txt", net);
   //globall::simulator = eveman;

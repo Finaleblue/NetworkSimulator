@@ -1,13 +1,14 @@
-#include "network.h"
 #include <iostream>
-Network::Network() : debug_(1){}
+#include "network.h"
 
 void Network::AddHost(std::string id){
   devices_.insert({id, Host(id)});
+  std::cout<<"Host "<<id<<" added"<<std::endl;
 }
 
 void Network::AddRouter(std::string id){
   devices_.insert({id, Router(id)});
+  std::cout<<"Router "<<id<<" added"<<std::endl;
 }
 
 void Network::AddLink(std::string id, std::string end1_id, std::string end2_id,
@@ -17,15 +18,19 @@ void Network::AddLink(std::string id, std::string end1_id, std::string end2_id,
   Node& end2 = devices_.at(end2_id);
 
   links_.insert({id, Link(id, end1, end2, datarate, delay, buffer)});
+  std::cout<<"Link "<<id<<" added"<<std::endl;
+
 }
 
-void Network::AddFlow(const std::string id, double start_time, int size,
-                      const std::string src_id, const std::string dst_id, 
+void Network::AddFlow(std::string id, double start_time, int size,
+                      std::string src_id, std::string dst_id, 
                       std::string protocol){
+  Host& src = static_cast<Host&>(devices_.at(src_id));
+  Host& dst = static_cast<Host&>(devices_.at(dst_id));
+  flows_.insert({id, Flow(id, start_time, size, src, dst, protocol)} );
 
-  Node& src = devices_.at(src_id);
-  Node& dst = devices_.at(dst_id);
-  flows_.insert({id, Flow(id, start_time, size, dynamic_cast<Host&>(src), dynamic_cast<Host&>(dst), protocol)} );
+  std::cout<<"Flow "<<id<<" added"<<std::endl;
+
 }
 
 std::map<std::string, Flow> Network::GetFlows() const{
@@ -40,7 +45,4 @@ std::map<std::string, Node> Network::GetDevices() const{
   return devices_;
 }
 
-void Network::debug(){
-  std::cout<<debug_<<std::endl;
-}
 

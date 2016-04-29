@@ -12,8 +12,9 @@ EventManager::EventManager(){
 }
 
 Network& EventManager::Net(){
-  return net;
+  return net_;
 }
+
 void EventManager::log(const std::string msg){
   out_file_.open(output_filename_ + ".log");
   out_file_ << msg <<std::endl;
@@ -21,6 +22,10 @@ void EventManager::log(const std::string msg){
 }
 
 void EventManager::Setup(){
+  std::cout<<"setting up"<<std::endl;
+  flows_ = net_.GetFlows();
+  links_ = net_.GetLinks();
+  devices_ = net_.GetDevices();
   for (auto &pair : flows_){
       pair.second.Pack();
       queue_.push(FlowStartEvent(pair.second, pair.second.GetStartTime()));
