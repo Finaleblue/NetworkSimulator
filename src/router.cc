@@ -7,18 +7,18 @@ extern EventManager event_manager;
 
 Router::Router(const std::string id): Node(id){}
 
-bool Router::SendPacket(Packet p, double t) {
+void Router::SendPacket(Packet p, double t) {
   Link& l = GetRoute(p.GetDst().id());
   event_manager.push(std::shared_ptr<Event>(new TransmitPacketEvent(l, l.GetConnectedNode(*this), p, t)));
-  return true;
+  return;
 }
 
-bool Router::ReceivePacket(Packet p, double time){
+void Router::ReceivePacket(Packet p, double time){
   if (p.type() == 'C'){ //if the received packet is control type
-    return ReceiveControl(p);
+     ReceiveControl(p);
   }
   else{
-    return SendPacket(p, time);
+     SendPacket(p, time);
   }
 } 
 
@@ -53,24 +53,23 @@ void Router::UpdateCost(){ // updates cost vector every time step
   }
 }
 
-bool Router::SendControl(){
+void Router::SendControl(){
   int i = 0;
   for(auto &node : nodes_){
     Node& n = event_manager.Net().GetNode(node);
     event_manager.push(std::shared_ptr<Event>(new ReceivePacketEvent(n, Packet('C', i, *this, n), event_manager.time())));
     ++i;
   }
-  return true;
 }
 
-bool Router::ReceiveControl(Packet p){
+void Router::ReceiveControl(Packet p){
   UpdateTable(p.GetSrc().id());
-  return true;
 }
 
 std::map<std::string, double> Router::RoutingVector() const{
   return routing_table_.at(Node::id_);
 }
 
-
 //initiate with greedy algorithm
+
+

@@ -10,17 +10,17 @@ class EventManager;
 
 extern EventManager event_manager;
 
-class Router: public Node{
+class Router : public Node{
   public:
     Router(std::string id);
-    virtual bool SendPacket(Packet, double);
-    virtual bool ReceivePacket(Packet, double);
+    virtual void SendPacket(Packet, double);
+    virtual void ReceivePacket(Packet, double);
     bool allowedToTransmit();
     Link& GetRoute(std::string); // looks up the routing table and returns the link
     void UpdateTable(std::string); // updates the routing table every x time step
     void UpdateCost();
-    bool SendControl();
-    bool ReceiveControl(Packet p);
+    void SendControl();
+    void ReceiveControl(Packet p);
     std::map<std::string, double> RoutingVector() const;
   private:
     //each row represents each router's dist_ + cost_ vector

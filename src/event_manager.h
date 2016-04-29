@@ -14,6 +14,7 @@ class Flow;
 class Link;
 class Node;
 
+
 class EventManager{
   public:
     EventManager();
@@ -27,7 +28,7 @@ class EventManager{
     int queue_size();
 
   private:
-    std::priority_queue<std::shared_ptr<Event> > queue_;
+    std::priority_queue<std::shared_ptr<Event>, std::vector<std::shared_ptr<Event> >, EventCmp > queue_;
     std::map<std::string, Flow> flows_;
     std::map<std::string, Link> links_;
     std::map<std::string, Router> routers_;

@@ -11,7 +11,7 @@ class Flow{
   public:
     Flow(std::string id, double start_time, int size, 
          Host& src, Host& dst, std::string protocol);
-    bool Start(double t); //start the flow by sending packets
+    void Start(double t); //start the flow by sending packets
     void Pack(); //slice data into packets
     double GetStartTime() const;   
     std::string id() const;

@@ -9,8 +9,8 @@ class Link{
   public:
     Link(std::string, Node&, Node&, double, double, double);
     bool isAvailable() const;
-    bool ReceivePacket(Node&, Packet, double);
-    bool SendPacket(Node&, Packet, double);
+    void ReceivePacket(Node&, Packet, double);
+    void SendPacket(Node&, Packet, double);
     void DoneTransmitting();
     double GetCost() const;
     std::string id() const;

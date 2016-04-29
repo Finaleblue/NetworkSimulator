@@ -30,11 +30,12 @@ void Node::AddLink(Link &l){
 void Node::AddNode(Node &n){
   nodes_.push_back(n.id());
 }
+
 std::string Node::id() const{
   return id_;
 }
 
-bool Node::SendPacket(Packet, double){std::cout<<"node flag"<<std::endl;}
-bool Node::ReceivePacket(Packet, double){}
+void Node::SendPacket(Packet, double){std::cout<<"node flag"<<std::endl;}
+void Node::ReceivePacket(Packet, double){}
 
   

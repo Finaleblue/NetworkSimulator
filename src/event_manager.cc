@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include "event_manager.h"
 #include "flow.h"
 #include "host.h"
@@ -30,7 +31,7 @@ void EventManager::Setup(){
   hosts_ = net_.GetHosts();
   for (auto &pair : flows_){
       pair.second.Pack();
-      queue_.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(pair.second, pair.second.GetStartTime())));
+      queue_.push(std::shared_ptr<Event>(new FlowStartEvent(pair.second, pair.second.GetStartTime())));
   }
 }
 
@@ -40,7 +41,7 @@ bool EventManager::isDone() const{
 }
 
 void EventManager::Run(){ 
-  while(true){
+  while (true){
     if (queue_.empty()){
       std::cout<<"sim ended"<<std::endl;
       break;
@@ -52,12 +53,12 @@ void EventManager::Run(){
     std::shared_ptr<Event> e = queue_.top();
     queue_.pop();
     time_ = e->GetScheduledTime(); //sync global time
-    bool done = e->Start();  
+    e->Start();  
   }
 }
 
 void EventManager::push(std::shared_ptr<Event> e){
-//  std::cout<<"Event added"<<std::endl;
+  //std::cout<<"Event "<<e->debugmsg<<" added"<<std::endl;
   queue_.push(e); 
 }
 

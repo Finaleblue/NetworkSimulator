@@ -187,7 +187,8 @@ int main(int argc, char *argv[]) {
 		getline(cin, inputFile);
 	}
 */
-  inputFile = "./input/test_case_0.json";
+  //std::cin>>inputFile;
+  inputFile = "./input/test_case_a.json";
   outputFile = "./output.csv";
   parseInputs(inputFile);
 	// Create Network Simulator object 
@@ -203,6 +204,7 @@ int main(int argc, char *argv[]) {
   
   //debugSS<<"queue size seen from main: "<<event_manager.queue_size()<<std::endl;
   event_manager.Run();
+  
   //debugSS<<"queue size seen from main: "<<event_manager.queue_size()<<std::endl;
   //event_manager.Run();
   //debugSS<<"queue size seen from main: "<<event_manager.queue_size()<<std::endl;

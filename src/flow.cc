@@ -29,7 +29,7 @@ void Flow::Pack(){
   int data = size_;
   int i=1;
   while (data > 0){
-    packets_.push_back(Packet('D',i,src_, dst_));
+    packets_.push_back(Packet('D',(id_[1]-'0')*10+i,src_, dst_));
     ++i;
     data -= global::DATA_PACKET_SIZE;
   }
@@ -37,14 +37,13 @@ void Flow::Pack(){
   std::cout<<"total packets: "<<num_packs_<<std::endl;
 }
 
-bool Flow::Start(double t){
+void Flow::Start(double t){
   //std::cout<<"flow starts now"<<std::endl;
-  if (pack_to_send >= num_packs_)  {return true;}
+  if (pack_to_send >= num_packs_)  {return;}
   else{
     event_manager.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(*this, t+5)));
     event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_[pack_to_send], t))); 
     ++pack_to_send;
-    return true;
   }
 }
 

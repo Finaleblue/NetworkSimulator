@@ -1,28 +1,38 @@
 #include <vector>
+#include <queue>
 #include <string>
 #include <iostream>
-class A{
-      public:
-        virtual void do();
-    };
 
-class B : public A{
+std::priority_queue<int> pq;
+
+class A{
+  public:
+
+    const operator < (const A&){
+
+    }
+    void push();
+    
+};
+
+void A::push(){
+  for(int i=1; i<=10; i+=2) pq.push(i);
+}
+class B {
       public:
         //constructor
-        void do(){
-          std::cout<<"do A"<<std::end;
-        }
+        void push();
+        
      };
 
-class C{
-}
-int main(){
-  A a;
-  B b(a);
-  std::string id = "C1";
-  printint(id[1]-'0');
+void B::push(){
+for(int i=2; i<=10; i+=2) pq.push(i);
 }
 
-void printint(std::string i){
-  std::cout<<i<<std::endl;
+int main(){
+  A a;
+  B b;
+  a.push();
+  b.push();
+  while(!pq.empty()) {std::cout<<pq.top()<<" "<<std::endl; pq.pop();}
 }

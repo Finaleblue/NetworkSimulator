@@ -24,8 +24,8 @@ class Node{
     void AddNode(Node&);
     void AddNeighbor(Link&, Node&);
     std::string id() const;
-    virtual bool SendPacket(Packet, double);
-    virtual bool ReceivePacket(Packet, double);
+    virtual void SendPacket(Packet, double);
+    virtual void ReceivePacket(Packet, double);
 
   protected:
     int bits_sent_=0;
