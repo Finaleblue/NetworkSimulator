@@ -27,7 +27,7 @@ ReceivePacketEvent::ReceivePacketEvent(Link& from, Node &target, Packet p, doubl
 void ReceivePacketEvent::Start(){
   std::cout<<"@time: "<<schedule_at_<<", "
            <<target_.id()<<" received Packet "
-           <<packet_to_receive_.id()<<" From "
+           <<packet_to_receive_.fid()<<packet_to_receive_.id()<<" From "
            <<from_.GetConnectedNode(target_).id()<<std::endl;
 
   target_.ReceivePacket(from_, packet_to_receive_, schedule_at_);
@@ -39,7 +39,7 @@ TransmitPacketEvent::TransmitPacketEvent(Link &target, Node& next, Packet p, dou
 void TransmitPacketEvent::Start(){
   std::cout<<"@time: "<<schedule_at_<<", "
            <<target_.GetConnectedNode(next_).id()<<" pushed Packet "
-           <<packet_to_send_.id()<<" to "<<next_.id()<<std::endl;
+           <<packet_to_send_.fid()<<packet_to_send_.id()<<" to "<<next_.id()<<std::endl;
   target_.ReceivePacket(next_, packet_to_send_, schedule_at_);
 }
 
@@ -68,4 +68,15 @@ void SendPacketEvent::Start(){
            <<packet_to_send_.id()<< " to " 
            << packet_to_send_.GetDst().id()<<std::endl;
   target_.SendPacket(packet_to_send_, schedule_at_);
+}
+
+AckTimeoutEvent::AckTimeoutEvent(Host& target, Packet p, double t) //this packet must be ACK type
+  :target_(target), ack_packet_(p), Event(t){}
+
+void AckTimeoutEvent::Start(){
+  if (target_.CheckAck(ack_packet_)) {return;}
+  std::cout<<"@time: "<<schedule_at_<<", "
+           <<"ACK "<<ack_packet_.id()<<" timeout."
+           <<" Resending the packet."<<std::endl;
+  target_.ReSend(ack_packet_, schedule_at_);
 }

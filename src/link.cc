@@ -30,7 +30,7 @@ void Link::ReceivePacket(Node& send_to, Packet p, double t){
     occupancy_ += p.size();
   }
   else{
-    SendPacket(send_to, p, t + delay_); //TODO: take datarate into account
+    SendPacket(send_to, p, t + delay_ + p.size()/datarate_); 
   }
 }
 

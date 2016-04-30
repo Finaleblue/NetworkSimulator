@@ -7,12 +7,12 @@
 #include "packet.h"
 #include "global.h"
 
-Packet::Packet(std::string id, Node& src, Node& dst) :
-  id_(id), type_(id[0]), src_(src), seq_(ToSeq(id)), size_(global::PacketSize(type_)), dst_(dst)
+Packet::Packet(std::string flow_id, std::string id, Node& src, Node& dst) :
+  fid_(flow_id), id_(id), type_(id[0]), src_(src), seq_(ToSeq(id)), size_(global::PacketSize(type_)), dst_(dst)
 {}
 
-Packet::Packet(char type, int seq, Node& src, Node& dst):
-  id_(std::string(1,type) + std::to_string(seq)), type_(type), seq_(seq), src_(src), size_(global::PacketSize(type_)), dst_(dst)
+Packet::Packet(std::string flow_id, char type, int seq, Node& src, Node& dst):
+  fid_(flow_id), id_(std::string(1,type) + std::to_string(seq)), type_(type), seq_(seq), src_(src), size_(global::PacketSize(type_)), dst_(dst)
 {}
 
 Node& Packet::GetSrc() const{
@@ -41,4 +41,8 @@ char Packet::type() const{
 
 int Packet::ToSeq(std::string id){
   return id[1]-'0';
+}
+
+std::string Packet::fid(){
+  return fid_;
 }

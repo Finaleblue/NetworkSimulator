@@ -29,7 +29,7 @@ void Flow::Pack(){
   int data = size_;
   int i=1;
   while (data > 0){
-    packets_.push_back(Packet('D',(id_[1]-'0')*10+i,src_, dst_));
+    packets_.push_back(Packet(id_, 'D', i ,src_, dst_));
     ++i;
     data -= global::DATA_PACKET_SIZE;
   }

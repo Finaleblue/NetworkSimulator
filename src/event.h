@@ -28,7 +28,7 @@ struct EventCmp{
 class ReceivePacketEvent: public Event{
   public:
     ReceivePacketEvent(Link&, Node&, Packet, double);
-    void Start();
+    virtual void Start();
   private:
     Link& from_;
     Node& target_;
@@ -38,7 +38,7 @@ class ReceivePacketEvent: public Event{
 class TransmitPacketEvent: public Event{
   public:
     TransmitPacketEvent(Link&, Node&, Packet, double);
-    void Start();
+    virtual void Start();
     std::string debugmsg = "TX";
   private:
     Link& target_;
@@ -49,7 +49,7 @@ class TransmitPacketEvent: public Event{
 class FlowEndEvent: public Event{
   public:
     FlowEndEvent(Flow&, double);
-    void Start();
+    virtual void Start();
     std::string debugmsg = "FEND";
   private:
     Flow& flow_to_end_;
@@ -58,7 +58,7 @@ class FlowEndEvent: public Event{
 class FlowStartEvent: public Event{
   public:
     FlowStartEvent(Flow&, double);
-    void Start();
+    virtual void Start();
     std::string debugmsg = "FSTART";
   private:
     Flow& flow_to_start_;
@@ -67,10 +67,20 @@ class FlowStartEvent: public Event{
 class SendPacketEvent: public Event{
   public:
     SendPacketEvent(Node&, Packet, double);
-    void Start();
+    virtual void Start();
     std::string debugmsg = "SEND";
   private:
     Node& target_;
     Packet packet_to_send_;
+};
+
+class AckTimeoutEvent: public Event{
+  public:
+    AckTimeoutEvent(Host&, Packet, double);
+    virtual void Start();
+    std::string debugmsg = "ACKTO";
+  private:
+    Host& target_;
+    Packet ack_packet_;
 };
 #endif

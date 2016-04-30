@@ -10,8 +10,8 @@
 class Packet{
   public:
     //constructors
-    Packet(std::string, Node&, Node&);
-    Packet(char, int, Node&, Node&);
+    Packet(std::string, std::string, Node&, Node&);
+    Packet(std::string, char, int, Node&, Node&);
     
     //functions
     Node& GetSrc() const; //returns the sender info
@@ -22,9 +22,11 @@ class Packet{
     char type() const; // returns the type of the packet
     std::string ToType(std::string);
     int ToSeq(std::string);
+    std::string fid();
   private:
     std::string id_;
     char type_; //indicates if it is ACK or Data
+    std::string fid_; //id of flow it belongs to
     Node& src_;//sender of the packet(same as the sender of the flow)
     Node& dst_;//destination of the packet (same as the destination of the flow)
     int size_; //size of the packet. Unit: bits
