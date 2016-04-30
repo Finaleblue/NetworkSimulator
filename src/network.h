@@ -21,6 +21,7 @@ class Network{
     Router& GetRouter(std::string);
     Host& GetHost(std::string);
     Node& GetNode(std::string);
+    Flow& GetFlow(std::string);
   private:
     std::map<std::string, Flow> flows_;
     std::map<std::string, Link> links_;

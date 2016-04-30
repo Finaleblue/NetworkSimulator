@@ -13,9 +13,11 @@ class Host: public Node{
     bool allowedToTransmit() const;
     bool CheckAck(Packet p);
     int NextAck(std::string);
+    int num_received_packets();
   private:
     std::map<std::string, std::map<int, int> > ack_stack_;
     std::map<std::string, std::set<int> > received_packets_;
     int next_ack_=1;
+    double last_transmit_time_;
 };
 #endif

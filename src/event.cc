@@ -75,6 +75,7 @@ AckTimeoutEvent::AckTimeoutEvent(Host& target, Packet p, double t) //this packet
 
 void AckTimeoutEvent::Start(){
   if (target_.CheckAck(ack_packet_)) {return;}
+  event_manager.flows_.at(ack_packet_.fid()).Congestion();
   std::cout<<"@time: "<<schedule_at_<<", "
            <<"ACK "<<ack_packet_.id()<<" timeout."
            <<" Resending the packet."<<std::endl;

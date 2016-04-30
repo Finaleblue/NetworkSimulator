@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include "global.h"
 
 class Host;
 class Packet;
@@ -15,7 +16,14 @@ class Flow{
     void Pack(); //slice data into packets
     double GetStartTime() const;   
     std::string id() const;
+    void Congestion();
+    void RTT_Update(double rtt); //updates RTT info when ACK is received
+    double RTTE(); //return rtte_;
   private:
+    int CWND = global::INIT_CWND; //unit: number of packets
+    int SSTHRESH = global::INIT_SSTHRESH; // unit: number of packets
+    double rtte_ = global::INIT_RTTE; //estimated Round Trip Time
+    int acks_received_ = 0;
     std::string id_; //unique id to distinguish different flows
     Host& src_; //source node (host)
     Host& dst_; //destinatio node (host)

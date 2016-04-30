@@ -1,7 +1,6 @@
 #include <iostream>
 #include <memory>
 #include "flow.h"
-#include "global.h"
 #include "packet.h"
 #include "host.h"
 #include "event.h"
@@ -34,19 +33,43 @@ void Flow::Pack(){
     data -= global::DATA_PACKET_SIZE;
   }
   num_packs_ = packets_.size();
-  std::cout<<"total packets: "<<num_packs_<<std::endl;
+  std::cout<<num_packs_<<" packets from "<<id_<<std::endl;
 }
 
 void Flow::Start(double t){
+  int count=0;
   //std::cout<<"flow starts now"<<std::endl;
-  if (pack_to_send >= num_packs_)  {return;}
-  else{
-    event_manager.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(*this, t+5)));
-    event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_[pack_to_send], t))); 
-    ++pack_to_send;
+  while (count < CWND){
+    if (pack_to_send >= num_packs_)  {return;}
+    else{
+      event_manager.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(*this, t+5)));
+      event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_[pack_to_send], t))); 
+      ++pack_to_send;
+      ++count;
+    }
   }
 }
 
+void Flow::RTT_Update(double rtt){
+  //estimate RTTE
+  rtte_ = (rtte_ * (acks_received_) + rtt) / (++acks_received_);
+  ++CWND;
+}
+
+void Flow::Congestion(){
+  if (protocol_ == "TAEHO"){
+    CWND = 1;
+    SSTHRESH = CWND/2;
+  }
+  else if(protocol_ == "RENO"){
+    CWND /= 2;
+    SSTHRESH = CWND/2;
+  }
+}
+
+double Flow::RTTE(){
+  return rtte_;
+}
 std::string Flow::id() const{
   return id_;
 }

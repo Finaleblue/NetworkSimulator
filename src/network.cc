@@ -80,3 +80,7 @@ Node& Network::GetNode(std::string nid){
   if (nid[0] == 'H'){return GetHost(nid);}
   else  {return GetRouter(nid);}
 }
+
+Flow& Network::GetFlow(std::string fid){
+  return flows_.at(fid);
+}

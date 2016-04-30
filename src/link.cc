@@ -25,9 +25,11 @@ void Link::ReceivePacket(Node& send_to, Packet p, double t){
   //std::cout<<"link flag1"<<std::endl;
   if (transmitting_) {
     std::cout<<"Link "<<id_<<" is busy. Pushed to the buffer"<<std::endl; 
-    buffer_.push({p,send_to});
-    ++num_packs_in_buffer_;
-    occupancy_ += p.size();
+    if (buffer_size_ <= occupancy_ + p.size()){
+      buffer_.push({p,send_to});
+      ++num_packs_in_buffer_;
+      occupancy_ += p.size();
+    }
   }
   else{
     SendPacket(send_to, p, t + delay_ + p.size()/datarate_); 

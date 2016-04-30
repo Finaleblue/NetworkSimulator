@@ -4,7 +4,7 @@
     "links": [ 
         { "id": "L1", 
           "rate": 10, 
-          "delay": 10,
+          "delay": 1,
           "buffer": 64,
           "endpoints": [ "H1", "H2" ] } ],
     "flows": [

@@ -11,11 +11,13 @@ extern EventManager event_manager;
 Host::Host(std::string id) : Node::Node(id){}
 
 void Host::SendPacket(Packet p, double t){
-  Link& l = event_manager.Net().GetLink(links_[0]);
-  Node& n = event_manager.Net().GetNode(neighbors_.at(l.id()));
+  Link& l = event_manager.links_.at(links_[0]);
+  Node& n = event_manager.nodes_.at(neighbors_.at(l.id()));
+  last_transmit_time_ = t; //keep sent time for RTTE
   event_manager.push(std::shared_ptr<TransmitPacketEvent>(new TransmitPacketEvent(l, n, p, t)));
   if(p.type() == 'D'){
-    event_manager.push(std::shared_ptr<AckTimeoutEvent>(new AckTimeoutEvent(*this, Packet(p.fid(), 'A', p.seqNum(), p.GetDst(), p.GetSrc()), t+global::TIME_OUT)));
+    //Start ACK Timer 
+    event_manager.push(std::shared_ptr<AckTimeoutEvent>(new AckTimeoutEvent(*this, Packet(p.fid(), 'A', p.seqNum(), p.GetDst(), p.GetSrc()), t+event_manager.flows_.at(p.fid()).RTTE() )));
   }
   return;
 }
@@ -29,7 +31,6 @@ void Host::ReceivePacket(Link& from, Packet p, double t){
       subset.insert(p.seqNum());
       received_packets_.insert({p.fid(), subset});
       SendPacket(Packet(p.fid(), 'A', NextAck(p.fid()), *this, p.GetSrc()),t);
-
     }
     else{
       received_packets_.at(p.fid()).insert(p.seqNum());
@@ -47,11 +48,15 @@ void Host::ReceivePacket(Link& from, Packet p, double t){
     }
     else{
       if(++ack_stack_.at(p.fid()).at(p.seqNum()) >= 3){
-        //TODO: triple duplicate event;
+        std::cout<<"Triple Duplicate of "<<p.fid()<<p.id()<<". Retransmit."<<std::endl;
+        event_manager.flows_.at(p.fid()).Congestion();
+        ReSend(Packet(p.fid(), 'D', p.seqNum(), *this, p.GetSrc()), t);
       }
     }
+    //Tell flow to update RTTE
+    event_manager.flows_.at(p.fid()).RTT_Update(t-last_transmit_time_); 
   }
-  //TODO: implement case when it receives ACK and CTRL Packages
+  else {} //when receive CTRL Packet, do nothing. 
 } 
 
 bool Host::allowedToTransmit() const{
@@ -74,7 +79,12 @@ bool Host::CheckAck(Packet p){
   return (iitr != itr->second.end()); //return true if we do have it
 }
 
+//Selective repeat. Not, Go Back N.
 void Host::ReSend(Packet p, double t){
   Packet packet_to_resend(p.fid(), 'D', p.seqNum(), p.GetDst(), p.GetSrc()); 
   SendPacket(packet_to_resend, t);
+}
+
+int Host::num_received_packets(){
+  return received_packets_.size();
 }

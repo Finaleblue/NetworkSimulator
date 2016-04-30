@@ -23,7 +23,9 @@ class Router : public Node{
     void ReceiveControl(Packet p);
     std::map<std::string, double> RoutingVector() const;
     Link& Greedy();
+    void Init(); //initializes the routing table
   private:
+    double last_control_; //keep track of the time last control packet was sent
     Link* received_from_;
     //each row represents each router's dist_ + cost_ vector
     std::map<std::string, std::map<std::string, double> > routing_table_;

@@ -23,15 +23,28 @@ void EventManager::log(const std::string msg){
   out_file_.close();
 }
 
+
 void EventManager::Setup(){
   std::cout<<"Setting up the network"<<std::endl;
   flows_ = net_.GetFlows();
   links_ = net_.GetLinks();
   routers_ = net_.GetRouters();
   hosts_ = net_.GetHosts();
+  for( auto &itr: hosts_){
+    nodes_.insert({itr.first, itr.second});
+  }
+
+  for(auto &itr : routers_){
+    nodes_.insert({itr.first, itr.second});
+  }
+
   for (auto &pair : flows_){
       pair.second.Pack();
       queue_.push(std::shared_ptr<Event>(new FlowStartEvent(pair.second, pair.second.GetStartTime())));
+  }
+  for (auto &r : routers_){
+    r.second.Init();
+    std::cout<<"Router Setup"<<std::endl;
   }
 }
 
