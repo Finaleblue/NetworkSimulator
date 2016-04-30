@@ -27,9 +27,10 @@ struct EventCmp{
 
 class ReceivePacketEvent: public Event{
   public:
-    ReceivePacketEvent(Node&, Packet, double);
+    ReceivePacketEvent(Link&, Node&, Packet, double);
     void Start();
   private:
+    Link& from_;
     Node& target_;
     Packet packet_to_receive_;
 };

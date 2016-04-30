@@ -14,15 +14,17 @@ class Router : public Node{
   public:
     Router(std::string id);
     virtual void SendPacket(Packet, double);
-    virtual void ReceivePacket(Packet, double);
+    virtual void ReceivePacket(Link&, Packet, double);
     bool allowedToTransmit();
-    Link& GetRoute(std::string); // looks up the routing table and returns the link
+    Link& GetRoute(std::string); // looks up the routing table and returns the link (first link ref is the link back to the src)
     void UpdateTable(std::string); // updates the routing table every x time step
     void UpdateCost();
     void SendControl();
     void ReceiveControl(Packet p);
     std::map<std::string, double> RoutingVector() const;
+    Link& Greedy();
   private:
+    Link* received_from_;
     //each row represents each router's dist_ + cost_ vector
     std::map<std::string, std::map<std::string, double> > routing_table_;
 

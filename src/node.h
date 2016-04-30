@@ -25,7 +25,7 @@ class Node{
     void AddNeighbor(Link&, Node&);
     std::string id() const;
     virtual void SendPacket(Packet, double);
-    virtual void ReceivePacket(Packet, double);
+    virtual void ReceivePacket(Link&, Packet, double);
 
   protected:
     int bits_sent_=0;

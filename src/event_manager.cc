@@ -43,11 +43,11 @@ bool EventManager::isDone() const{
 void EventManager::Run(){ 
   while (true){
     if (queue_.empty()){
-      std::cout<<"sim ended"<<std::endl;
+      std::cout<<"Simulation Ended"<<std::endl;
       break;
     }
     if(time_ >= global::MAX_SIMULATION_TIME){
-      std::cout<<"MAX SIM TIME"<<std::endl;
+      std::cout<<"MAX SIM TIME REACHED"<<std::endl;
       break;
     }
     std::shared_ptr<Event> e = queue_.top();

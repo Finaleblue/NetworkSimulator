@@ -101,7 +101,6 @@ void parseInputs(const std::string inputFile) {
 
     {
       const rapidjson::Value& routers = root["routers"]; 
-
       for (rapidjson::SizeType i = 0; i < routers.Size(); ++i) {
         const rapidjson::Value& crouter = routers[i];
         net.AddRouter(crouter.GetString());
@@ -187,8 +186,9 @@ int main(int argc, char *argv[]) {
 		getline(cin, inputFile);
 	}
 */
-  //std::cin>>inputFile;
-  inputFile = "./input/test_case_a.json";
+  std::cout<<"input file name:"<<std::endl;
+  std::cin>>inputFile;
+  //inputFile = "./input/test_case_a.json";
   outputFile = "./output.csv";
   parseInputs(inputFile);
 	// Create Network Simulator object 

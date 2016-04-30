@@ -7,6 +7,7 @@ class Node;
 
 class Link{
   public:
+    bool operator == (Link& l){ return l.id() == this->id();}
     Link(std::string, Node&, Node&, double, double, double);
     bool isAvailable() const;
     void ReceivePacket(Node&, Packet, double);

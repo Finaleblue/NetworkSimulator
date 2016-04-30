@@ -27,6 +27,7 @@ void Link::ReceivePacket(Node& send_to, Packet p, double t){
     std::cout<<"Link "<<id_<<" is busy. Pushed to the buffer"<<std::endl; 
     buffer_.push({p,send_to});
     ++num_packs_in_buffer_;
+    occupancy_ += p.size();
   }
   else{
     SendPacket(send_to, p, t + delay_); //TODO: take datarate into account
@@ -36,7 +37,7 @@ void Link::ReceivePacket(Node& send_to, Packet p, double t){
 void Link::SendPacket(Node& send_to, Packet p, double t){
   //std::cout<<"link flag2"<<std::endl;
   transmitting_ = true;
-  event_manager.push(std::shared_ptr<ReceivePacketEvent>(new ReceivePacketEvent(send_to, p, t)));
+  event_manager.push(std::shared_ptr<ReceivePacketEvent>(new ReceivePacketEvent(*this, send_to, p, t)));
 }
 
 double Link::GetCost() const{

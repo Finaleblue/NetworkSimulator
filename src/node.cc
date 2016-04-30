@@ -36,6 +36,6 @@ std::string Node::id() const{
 }
 
 void Node::SendPacket(Packet, double){std::cout<<"node flag"<<std::endl;}
-void Node::ReceivePacket(Packet, double){}
+void Node::ReceivePacket(Link&, Packet, double){}
 
   
