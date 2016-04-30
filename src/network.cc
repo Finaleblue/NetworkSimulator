@@ -48,19 +48,19 @@ void Network::AddFlow(std::string id, double start_time, int size,
 
 }
 
-std::map<std::string, Flow> Network::GetFlows() const{
+std::map<std::string, Flow>& Network::GetFlows(){
   return flows_;
 }
 
-std::map<std::string, Link> Network::GetLinks() const{
+std::map<std::string, Link>& Network::GetLinks(){
   return links_;
 }
 
-std::map<std::string, Router> Network::GetRouters() const{
+std::map<std::string, Router>& Network::GetRouters(){
   return routers_;
 }
 
-std::map<std::string, Host> Network::GetHosts() const{
+std::map<std::string, Host>& Network::GetHosts(){
   return hosts_;
 }
 

@@ -21,7 +21,7 @@ class Link{
     std::string id_;
     double datarate_;
     double buffer_size_;
-    double occupancy_;
+    double occupancy_=0;
     double delay_;
     Node& end1_;
     Node& end2_;

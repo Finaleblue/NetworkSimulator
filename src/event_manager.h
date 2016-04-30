@@ -26,11 +26,7 @@ class EventManager{
     Network& Net();
     double time();
     int queue_size();
-    std::map<std::string, Flow> flows_;
-    std::map<std::string, Link> links_;
-    std::map<std::string, Router> routers_;
-    std::map<std::string, Host> hosts_;
-    std::map<std::string, Node> nodes_;
+    Node& GetNode(std::string);
 
   private:
     std::priority_queue<std::shared_ptr<Event>, std::vector<std::shared_ptr<Event> >, EventCmp > queue_;

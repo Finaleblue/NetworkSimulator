@@ -3,7 +3,7 @@
     "routers": [],
     "links": [ 
         { "id": "L1", 
-          "rate": 10, 
+          "rate": 1, 
           "delay": 1,
           "buffer": 64,
           "endpoints": [ "H1", "H2" ] } ],
@@ -11,7 +11,7 @@
         { "id": "F1",
           "src": "H1",
           "dst": "H2",
-		  "protocol": "UDP",
+		  "protocol": "TAHOE",
           "size": 20,
           "start": 1.0,
           "FAST": true } ]

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <memory>
 #include "flow.h"
@@ -52,23 +53,33 @@ void Flow::Start(double t){
 
 void Flow::RTT_Update(double rtt){
   //estimate RTTE
+  std::cout<<"RTTE changed from: "<<rtte_;
   rtte_ = (rtte_ * (acks_received_) + rtt) / (++acks_received_);
-  ++CWND;
+  std::cout<<" to "<<rtte_<<std::endl;
+  if(slow_start){
+    CWND*=2;
+    if (CWND >= SSTHRESH) {slow_start = false;}
+  }
+  else{
+    ++CWND;
+  }
 }
 
 void Flow::Congestion(){
-  if (protocol_ == "TAEHO"){
+  if (protocol_ == "TAHOE"){
     CWND = 1;
     SSTHRESH = CWND/2;
+    slow_start=true;
   }
   else if(protocol_ == "RENO"){
     CWND /= 2;
     SSTHRESH = CWND/2;
+    slow_start=true;
   }
 }
 
 double Flow::RTTE(){
-  return rtte_;
+  return std::max(rtte_, 1.0);
 }
 std::string Flow::id() const{
   return id_;

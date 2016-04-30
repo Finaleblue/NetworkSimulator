@@ -14,6 +14,7 @@ class Host: public Node{
     bool CheckAck(Packet p);
     int NextAck(std::string);
     int num_received_packets();
+    Link& GetLink();
   private:
     std::map<std::string, std::map<int, int> > ack_stack_;
     std::map<std::string, std::set<int> > received_packets_;

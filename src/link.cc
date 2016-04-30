@@ -25,7 +25,7 @@ void Link::ReceivePacket(Node& send_to, Packet p, double t){
   //std::cout<<"link flag1"<<std::endl;
   if (transmitting_) {
     std::cout<<"Link "<<id_<<" is busy. Pushed to the buffer"<<std::endl; 
-    if (buffer_size_ <= occupancy_ + p.size()){
+    if (buffer_size_ >= occupancy_ + p.size()){
       buffer_.push({p,send_to});
       ++num_packs_in_buffer_;
       occupancy_ += p.size();
@@ -43,7 +43,7 @@ void Link::SendPacket(Node& send_to, Packet p, double t){
 }
 
 double Link::GetCost() const{
-  return occupancy_ / datarate_;
+  return (1+occupancy_) / datarate_;
 }
 
 std::string Link::id() const{

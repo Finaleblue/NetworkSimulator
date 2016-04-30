@@ -22,7 +22,7 @@ class Router : public Node{
     void SendControl();
     void ReceiveControl(Packet p);
     std::map<std::string, double> RoutingVector() const;
-    Link& Greedy();
+    Link& Greedy(std::string);
     void Init(); //initializes the routing table
   private:
     double last_control_; //keep track of the time last control packet was sent

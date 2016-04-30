@@ -39,7 +39,7 @@ TransmitPacketEvent::TransmitPacketEvent(Link &target, Node& next, Packet p, dou
 void TransmitPacketEvent::Start(){
   std::cout<<"@time: "<<schedule_at_<<", "
            <<target_.GetConnectedNode(next_).id()<<" pushed Packet "
-           <<packet_to_send_.fid()<<packet_to_send_.id()<<" to "<<next_.id()<<std::endl;
+           <<packet_to_send_.fid()<<packet_to_send_.id()<<" to "<<target_.id()<<std::endl;
   target_.ReceivePacket(next_, packet_to_send_, schedule_at_);
 }
 
@@ -75,7 +75,7 @@ AckTimeoutEvent::AckTimeoutEvent(Host& target, Packet p, double t) //this packet
 
 void AckTimeoutEvent::Start(){
   if (target_.CheckAck(ack_packet_)) {return;}
-  event_manager.flows_.at(ack_packet_.fid()).Congestion();
+  event_manager.Net().GetFlow(ack_packet_.fid()).Congestion();
   std::cout<<"@time: "<<schedule_at_<<", "
            <<"ACK "<<ack_packet_.id()<<" timeout."
            <<" Resending the packet."<<std::endl;

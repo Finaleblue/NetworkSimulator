@@ -20,6 +20,7 @@ class Flow{
     void RTT_Update(double rtt); //updates RTT info when ACK is received
     double RTTE(); //return rtte_;
   private:
+    bool slow_start=true;
     int CWND = global::INIT_CWND; //unit: number of packets
     int SSTHRESH = global::INIT_SSTHRESH; // unit: number of packets
     double rtte_ = global::INIT_RTTE; //estimated Round Trip Time
