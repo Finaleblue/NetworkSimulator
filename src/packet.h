@@ -10,8 +10,8 @@
 class Packet{
   public:
     //constructors
-    Packet(std::string, std::string, Node&, Node&);
-    Packet(std::string, char, int, Node&, Node&);
+    Packet(std::string, int, std::string, Node&, Node&);
+    Packet(std::string, int, char, int, Node&, Node&);
     
     //functions
     Node& GetSrc() const; //returns the sender info
@@ -23,6 +23,7 @@ class Packet{
     std::string ToType(std::string);
     int ToSeq(std::string);
     std::string fid();
+    int flow_num_;
   private:
     std::string id_;
     char type_; //indicates if it is ACK or Data

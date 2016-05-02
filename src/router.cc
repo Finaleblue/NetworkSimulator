@@ -87,7 +87,7 @@ void Router::SendControl(){
   for(auto &link : links_){
     Link& l = event_manager.Net().GetLink(link);
     Node& n = event_manager.Net().GetNode(neighbors_.at(link));
-    event_manager.push(std::shared_ptr<Event>(new TransmitPacketEvent(l, n, Packet("FC", 'C', i, *this, n), event_manager.time())));
+    event_manager.push(std::shared_ptr<Event>(new TransmitPacketEvent(l, n, Packet("FC", -1, 'C', i, *this, n), event_manager.time())));
     ++i;
   }
 }

@@ -29,7 +29,7 @@ void EventManager::Setup(){
   *debugSS<<"Setting up the network"<<std::endl;
   for (auto &pair : net_.GetFlows()){
       pair.second.Pack();
-      queue_.push(std::shared_ptr<Event>(new FlowStartEvent(pair.second, pair.second.GetStartTime())));
+      queue_.push(std::shared_ptr<Event>(new FlowStartEvent(pair.second, 0, pair.second.GetStartTime())));
   }
   for (auto &r : net_.GetRouters()){
     r.second.Init();

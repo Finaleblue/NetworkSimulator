@@ -57,11 +57,12 @@ class FlowEndEvent: public Event{
 
 class FlowStartEvent: public Event{
   public:
-    FlowStartEvent(Flow&, double);
+    FlowStartEvent(Flow&, int, double);
     virtual void Start();
     std::string debugmsg = "FSTART";
   private:
     Flow& flow_to_start_;
+    int flow_num_;
 };
 
 class SendPacketEvent: public Event{
