@@ -6,9 +6,9 @@
 namespace global{
   static double MAX_SIMULATION_TIME = 3000.0; //seconds
   static double MAX_TIMEOUT = 100;
-  static const double ACK_PACKET_SIZE = 500; // 500 bytes
-  static const double DATA_PACKET_SIZE = 64000; // 64 kbytes
-  static const double CTRL_PACKET_SIZE = 2000; // 2 kbytes
+  static const double ACK_PACKET_SIZE = 64; // 500 bytes
+  static const double DATA_PACKET_SIZE = 1024; // 64 kbytes
+  static const double CTRL_PACKET_SIZE = 64; // 2 kbytes
   static const double INIT_CWND = DATA_PACKET_SIZE;
   static const double INIT_SSTHRESH = DATA_PACKET_SIZE*10;
   static const double INIT_RTTE = 50; //seconds

@@ -31,6 +31,7 @@ double Flow::GetStartTime() const{
 
 void Flow::Pack(){
   int data = size_;
+  *debugSS<<data<<"data"<<std::endl;
   int i=1;
   while (data > 0){
     packets_.push_back(Packet(id_, 'D', i ,src_, dst_));
@@ -42,17 +43,35 @@ void Flow::Pack(){
 }
 
 void Flow::Start(double t){
-  int count=0;
-  //*debugSS<<"flow starts now"<<std::endl;
-  while (count * global::DATA_PACKET_SIZE < CWND){
-    if (pack_to_send >= num_packs_)  {return;}
-    else{
-      event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_[pack_to_send], t))); 
-      ++pack_to_send;
-      ++count;
+  if (protocol_ == "UDP"){
+    *debugSS<<"UDP Protocol loaded for "<<id_<<std::endl;
+    double wait_ = global::DATA_PACKET_SIZE / src_.GetLink().rate();
+    if(src_.GetLink().isAvailable()){
+      if (pack_to_send >= num_packs_)  {return;}
+      else{
+        event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_[pack_to_send], t))); 
+        ++pack_to_send;
+      }
+    }
+    event_manager.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(*this, t+wait_)));
+  }
+
+  else{
+    if (src_.GetLink().isAvailable()){
+      int count=0;
+      //*debugSS<<"flow starts now"<<std::endl;
+      while (count * global::DATA_PACKET_SIZE < CWND){
+        if (pack_to_send >= num_packs_)  {return;}
+        else{
+          event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_[pack_to_send], t))); 
+          ++pack_to_send;
+          ++count;
+        }
+      }
+      double wait_ = count*global::DATA_PACKET_SIZE / src_.GetLink().rate();
+      event_manager.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(*this, t+wait_)));
     }
   }
-  event_manager.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(*this, t+5)));
 }
 
 void Flow::RTT_Update(double rtt){

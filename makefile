@@ -8,5 +8,6 @@ all:
 	g++ -std=c++11 -c src/packet.cc -o bin/packet.o
 	g++ -std=c++11 -c src/flow.cc -o bin/flow.o
 	g++ -std=c++11 -c src/network.cc -o bin/network.o
-	g++ -std=c++11 src/main.cc bin/*.o -o NetSim.exe
+	g++ -std=c++11 -c src/main.cc -o bin/main.o 
+	g++ -std=c++11 bin/*.o -o NetSim.exe -lstdc++fs
 

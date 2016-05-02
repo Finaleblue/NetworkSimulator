@@ -7,7 +7,7 @@
  * @version 0.3.0 04/26/16
  */
 
-#define NDEBUG // Comment out to turn on debug information and assertions
+//#define NDEBUG // Comment out to turn on debug information and assertions
 
 #include "event_manager.h"
 #include "global.h"

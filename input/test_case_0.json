@@ -1,18 +1,18 @@
 {
-    "hosts": [ "H1", "H2" ],
+    "hosts": [ "H1", "H2"],
     "routers": [],
     "links": [ 
         { "id": "L1", 
-          "rate": 1000, 
-          "delay": 0.1,
-          "buffer": 10000,
+          "rate": 10000000, 
+          "delay": 0.01,
+          "buffer": 64000,
           "endpoints": [ "H1", "H2" ] } ],
+          
     "flows": [
         { "id": "F1",
           "src": "H1",
           "dst": "H2",
-		  "protocol": "TAHOE",
-          "size": 128000,
+          "size": 20000000,
           "start": 1.0,
-          "FAST": true } ]
+          "protocol": "UDP"} ]
 }

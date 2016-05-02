@@ -23,6 +23,7 @@ class Node{
     void AddLink(Link&);
     void AddNode(Node&);
     void AddNeighbor(Link&, Node&);
+    virtual Link& GetLink();
     std::string id() const;
     virtual void SendPacket(Packet, double);
     virtual void ReceivePacket(Link&, Packet, double);
