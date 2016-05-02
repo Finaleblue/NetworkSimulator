@@ -54,11 +54,11 @@ void FlowEndEvent::Start(){
  // flow_to_end_.End();
 }
 
-FlowStartEvent::FlowStartEvent(Flow &f, double t) 
-  : flow_to_start_(f), Event(t){}
+FlowStartEvent::FlowStartEvent(Flow &f, int fnum, double t) 
+  : flow_num_(fnum), flow_to_start_(f), Event(t){}
 
 void FlowStartEvent::Start(){
-  flow_to_start_.Start(schedule_at_);
+  flow_to_start_.Start(schedule_at_, flow_num_);
 }
 
 SendPacketEvent::SendPacketEvent(Node &target, Packet p, double t)

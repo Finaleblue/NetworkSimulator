@@ -30,6 +30,8 @@ void Host::SendPacket(Packet p, double t){
 void Host::ReceivePacket(Link& from, Packet p, double t){
   ////*debugSS<<"RCV PAckt floag"<<std::endl;
   from.flush(t);
+  event_manager.push(std::shared_ptr<FlowStartEvent>(
+        new FlowStartEvent(event_manager.Net().GetFlow(p.fid()), p.flow_num_+1, t)));
   //*debugSS<<"RCVPCKTFLAG1"<<std::endl;
   if(p.type() == 'D'){ //only execute this when the received packet is a data packet
     auto itr = received_packets_.find(p.fid());
@@ -42,13 +44,13 @@ void Host::ReceivePacket(Link& from, Packet p, double t){
       /*event_manager.push(
           std::shared_ptr<AckTimeoutEvent>(
             new AckTimeoutEvent(*this, Packet(p.fid(), 'A', p.seqNum(), p.GetSrc(), p.GetDst()), t + event_manager.Net().GetFlow(p.fid()).TimeOutEst())));*/
-      SendPacket(Packet(p.fid(), 'A', next_ack_.at(p.fid()), *this, p.GetSrc()),t);
+      SendPacket(Packet(p.fid(), p.flow_num_, 'A', next_ack_.at(p.fid()), *this, p.GetSrc()),t);
     }
     else{
       received_packets_.at(p.fid()).insert(p.seqNum()); // record the received packet seq num
       if (p.seqNum() >= next_ack_.at(p.fid())){
         NextAck(p.fid());
-        SendPacket(Packet(p.fid(), 'A', next_ack_.at(p.fid()), *this, p.GetSrc()),t);
+        SendPacket(Packet(p.fid(), p.flow_num_, 'A', next_ack_.at(p.fid()), *this, p.GetSrc()),t);
       }
     }
   }
@@ -77,7 +79,7 @@ void Host::ReceivePacket(Link& from, Packet p, double t){
                <<", Triple Duplicate of "<<p.fid()<<p.id()<<". Retransmitting Data."<<std::endl;
         event_manager.Net().GetFlow(p.fid()).Congestion();
         ack_stack_.at(p.fid()).at(p.seqNum()) = 1;
-        ReSend(Packet(p.fid(), 'A', p.seqNum(), p.GetSrc(), *this), t);
+        ReSend(Packet(p.fid(), p.flow_num_, 'A', p.seqNum(), p.GetSrc(), *this), t);
       }
     }
     //Tell flow to update RTTE
@@ -111,7 +113,7 @@ bool Host::CheckAck(Packet p){
 
 //Selective repeat. Not, Go Back N.
 void Host::ReSend(Packet p, double t){
-  Packet packet_to_resend(p.fid(), 'D', p.seqNum()+1, p.GetDst(), p.GetSrc()); 
+  Packet packet_to_resend(p.fid(), p.flow_num_, 'D', p.seqNum()+1, p.GetDst(), p.GetSrc()); 
   SendPacket(packet_to_resend, t);
 }
 

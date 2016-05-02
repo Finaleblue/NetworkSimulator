@@ -33,7 +33,7 @@ void Flow::Pack(){
   int data = size_;
   int i=1;
   while (data > 0){
-    packets_.push_back(Packet(id_, 'D', i ,src_, dst_));
+    packets_.push_back(Packet(id_, i, 'D', i ,src_, dst_));
     ++i;
     data -= global::DATA_PACKET_SIZE;
   }
@@ -41,18 +41,19 @@ void Flow::Pack(){
   *debugSS<<num_packs_<<" packets from "<<id_<<std::endl;
 }
 
-void Flow::Start(double t){
+void Flow::Start(double t, int flow_num){
+  if (flow_num <= flow_num_)  {return;}
+
   int count=0;
   //*debugSS<<"flow starts now"<<std::endl;
-  while (count * global::DATA_PACKET_SIZE < CWND){
+  while ((++count) * global::DATA_PACKET_SIZE < CWND){
     if (pack_to_send >= num_packs_)  {return;}
     else{
+      packets_[pack_to_send].flow_num_ = flow_num_;
       event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_[pack_to_send], t))); 
       ++pack_to_send;
-      ++count;
     }
   }
-  event_manager.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(*this, t+5)));
 }
 
 void Flow::RTT_Update(double rtt){
