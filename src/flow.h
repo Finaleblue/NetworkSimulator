@@ -18,12 +18,15 @@ class Flow{
     std::string id() const;
     void Congestion();
     void RTT_Update(double rtt); //updates RTT info when ACK is received
-    double RTTE(); //return rtte_;
+    double TimeOutEst(); //return rtte_;
   private:
+    std::ofstream *RTTSS_;
+    std::ofstream *CWNDSS_;
     bool slow_start=true;
-    int CWND = global::INIT_CWND; //unit: number of packets
-    int SSTHRESH = global::INIT_SSTHRESH; // unit: number of packets
+    double CWND = global::INIT_CWND; //unit: number of bits 
+    double SSTHRESH = global::INIT_SSTHRESH; // unit: number of bits 
     double rtte_ = global::INIT_RTTE; //estimated Round Trip Time
+    double most_recent_rtt_;
     int acks_received_ = 0;
     std::string id_; //unique id to distinguish different flows
     Host& src_; //source node (host)

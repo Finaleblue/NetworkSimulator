@@ -10,10 +10,10 @@
 #define NDEBUG // Comment out to turn on debug information and assertions
 
 #include "event_manager.h"
+#include "global.h"
 #include <cassert>
 #include <cstdio>
 #include <string>
-#include <iostream>
 #include <algorithm>
 #include <unistd.h>
 
@@ -26,7 +26,6 @@
 #include "host.h"
 #include "router.h"
 #include "network.h"
-#include "global.h"
 #include "flow.h"
 #include "packet.h"
 #include "link.h"
@@ -36,17 +35,19 @@
 //#include "rapidjson/prettywriter.h" // for stringify JSON
 //TODO: Examine How things are parsed
 bool debug = false;
-std::ostream &debugSS = std::cout;
-std::ostream &errorSS = std::cerr;
-std::ostream &outputSS = std::cout;
+std::ostream *debugSS = &std::cout;
+std::ostream *errorSS = &std::cerr;
+std::ostream *logger = &std::clog;
+std::string inputFile;
+std::string outputFolder;
 
 EventManager event_manager;
 
-void parseInputs(const std::string inputFile) {
+void parseInputs() {
   Network &net = event_manager.Net();
   rapidjson::Document root; // root is a JSON value represents the root of DOM.
   #ifndef NDEBUG
-    debugSS << "Parse a JSON file to document root." << std::endl;
+    *debugSS << "Parse a JSON file to document root." << std::endl;
   #endif
   FILE *input = fopen(inputFile.c_str(), "rb"); // "r" for non-Windows
   if (input!=NULL) {
@@ -57,7 +58,7 @@ void parseInputs(const std::string inputFile) {
     rapidjson::StringBuffer buffer;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
     root.Accept(writer);
-    debugSS << "Original JSON:\n" << buffer.GetString() << std::endl;
+    *debugSS << "Original JSON:\n" << buffer.GetString() << std::endl;
   }
 //		if (root.ParseStream(json).HasParseError()) {
 //			fprintf(errorSS, "\nError(offset %u): %s\n", 
@@ -70,7 +71,7 @@ void parseInputs(const std::string inputFile) {
 //		return -1;
 //	}
   #ifndef NDEBUG
-    debugSS<< "Parsing to root succeeded." <<"\n\n" << std::endl;
+    *debugSS<< "Parsing to root succeeded." <<"\n\n" << std::endl;
   #endif
     rapidjson::Value::MemberIterator itr;
 
@@ -79,7 +80,7 @@ void parseInputs(const std::string inputFile) {
       itr = root.FindMember("end"); // assert(root.HasMember("hosts")); // Old version
       global::MAX_SIMULATION_TIME = (itr != root.MemberEnd()) ? itr->value.GetDouble() : 10;
       #ifndef NDEBUG
-        debugSS << "Set end time of simulator: " << global::MAX_SIMULATION_TIME << std::endl;
+        *debugSS << "Set end time of simulator: " << global::MAX_SIMULATION_TIME << std::endl;
       #endif	
     }	
 
@@ -90,13 +91,13 @@ void parseInputs(const std::string inputFile) {
         const rapidjson::Value& chosts = hosts[i];
         net.AddHost(chosts.GetString()); 
         #ifndef NDEBUG
-          debugSS << "Added Host " << chosts.GetString() << std::endl;
+          *debugSS << "Added Host " << chosts.GetString() << std::endl;
         #endif
       }
     }
 
     #ifndef NDEBUG
-      debugSS << "Finished Adding Hosts." << std::endl;
+      *debugSS << "Finished Adding Hosts." << std::endl;
     #endif	
 
     {
@@ -105,13 +106,13 @@ void parseInputs(const std::string inputFile) {
         const rapidjson::Value& crouter = routers[i];
         net.AddRouter(crouter.GetString());
         #ifndef NDEBUG
-          debugSS << "Added Router " << crouter.GetString() << std::endl;
+          *debugSS << "Added Router " << crouter.GetString() << std::endl;
         #endif
       }
     }
 
     #ifndef NDEBUG
-     debugSS << "Finished Adding Routers." << std::endl;
+     *debugSS << "Finished Adding Routers." << std::endl;
     #endif	
 
 
@@ -124,13 +125,13 @@ void parseInputs(const std::string inputFile) {
                     clink["endpoints"][1].GetString(), clink["rate"].GetDouble(), 
                     clink["buffer"].GetDouble(), clink["delay"].GetDouble());
         #ifndef NDEBUG
-          debugSS <<"Added Link " << clink["id"].GetString() << std::endl;
+          *debugSS <<"Added Link " << clink["id"].GetString() << std::endl;
         #endif
       }
     }
 
     #ifndef NDEBUG
-      debugSS << "Finished Adding Links." << std::endl;
+      *debugSS << "Finished Adding Links." << std::endl;
     #endif	
 
 
@@ -143,24 +144,24 @@ void parseInputs(const std::string inputFile) {
                     cflow["size"].GetInt(), cflow["src"].GetString(), 
                     cflow["dst"].GetString(), cflow["protocol"].GetString());
         #ifndef NDEBUG
-          debugSS << "Added Flow " << cflow["id"].GetString() << std::endl;
+          *debugSS << "Added Flow " << cflow["id"].GetString() << std::endl;
         #endif
       }
     }
 
     #ifndef NDEBUG
-      debugSS << "Finished Adding Flows." << std::endl;
+      *debugSS << "Finished Adding Flows." << std::endl;
     #endif
 	
 }
 
+
 int main(int argc, char *argv[]) {
   int c = -1, b = 0; // getopt options
   static char usageInfo[] = "[-i input_file] [-o output_file] [-d]\n"; // Prompt on invalid input
-  std::string inputFile, outputFile;
 	
   #ifndef NDEBUG
-    debugSS << "Parsing options if they exist." << std::endl;
+    *debugSS << "Parsing options if they exist." << std::endl;
   #endif
 /*	while ((c = getopt(argc, argv, "i:o:d")) != -1) {
 		switch (c) {
@@ -186,24 +187,30 @@ int main(int argc, char *argv[]) {
 		getline(cin, inputFile);
 	}
 */
-  std::cout<<"input file name:"<<std::endl;
+  std::cout<<"input file name :"<<std::endl;
   std::cin>>inputFile;
-  //inputFile = "./input/test_case_a.json";
-  outputFile = "./output.csv";
-  parseInputs(inputFile);
+  std::string logFile = "./logs"+inputFile.substr(inputFile.rfind('/'), inputFile.rfind('.') - inputFile.rfind('/')) + ".log";
+  std::streambuf* clogbuf = std::clog.rdbuf(logger->rdbuf());
+  std::ofstream outputSS(logFile, std::ofstream::out);
+  outputFolder = "./output";
+  std::clog.rdbuf(outputSS.rdbuf());
+  parseInputs();
 	// Create Network Simulator object 
   #ifndef NDEBUG
-    debugSS << "Created Network Simulator object." << std::endl;
+    *debugSS << "Created Network Simulator object." << std::endl;
   #endif	
 	
 	// Load JSON Input File
   #ifndef NDEBUG
-    debugSS << "Loaded Network Topology." << std::endl;
+    *debugSS << "Loaded Network Topology." << std::endl;
   #endif
   event_manager.Setup();
+  event_manager.Run();
+  std::clog.rdbuf(clogbuf);
+  outputSS.close();
+  *debugSS<<"Output Log wrote to "<<logFile<<std::endl;
   
   //debugSS<<"queue size seen from main: "<<event_manager.queue_size()<<std::endl;
-  event_manager.Run();
   
   //debugSS<<"queue size seen from main: "<<event_manager.queue_size()<<std::endl;
   //event_manager.Run();

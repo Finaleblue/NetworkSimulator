@@ -16,7 +16,7 @@ class Packet{
     //functions
     Node& GetSrc() const; //returns the sender info
     Node& GetDst() const; //returns the destination info
-    int size() const; //returns the size of the packet
+    double size() const; //returns the size of the packet
     int seqNum() const; //returns sequence number of this packet
     std::string id() const;
     char type() const; // returns the type of the packet
@@ -29,7 +29,7 @@ class Packet{
     std::string fid_; //id of flow it belongs to
     Node& src_;//sender of the packet(same as the sender of the flow)
     Node& dst_;//destination of the packet (same as the destination of the flow)
-    int size_; //size of the packet. Unit: bits
+    double size_; //size of the packet. Unit: bits
     int seq_; //The sequence number of the packet.
 };
 #endif

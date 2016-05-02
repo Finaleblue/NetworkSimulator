@@ -1,4 +1,3 @@
-#include <iostream>
 #include <memory>
 #include "event_manager.h"
 #include "flow.h"
@@ -7,6 +6,8 @@
 #include "link.h"
 #include "global.h"
 
+extern std::ostream *debugSS;
+extern std::ostream *logger;
 
 EventManager::EventManager(){
   time_ = 0;
@@ -25,14 +26,14 @@ void EventManager::log(const std::string msg){
 
 
 void EventManager::Setup(){
-  std::cout<<"Setting up the network"<<std::endl;
+  *debugSS<<"Setting up the network"<<std::endl;
   for (auto &pair : net_.GetFlows()){
       pair.second.Pack();
       queue_.push(std::shared_ptr<Event>(new FlowStartEvent(pair.second, pair.second.GetStartTime())));
   }
   for (auto &r : net_.GetRouters()){
     r.second.Init();
-    std::cout<<"Setting up "<<r.first<<" routing table."<<std::endl;
+    *debugSS<<"Setting up "<<r.first<<" routing table."<<std::endl;
   }
 }
 
@@ -44,12 +45,12 @@ bool EventManager::isDone() const{
 void EventManager::Run(){ 
   while (true){
     if (queue_.empty()){
-      std::cout<<"Simulation Ended"<<std::endl;
-      break;
+      *logger<<"Simulation Ended"<<std::endl;
+      return;
     }
     if(time_ >= global::MAX_SIMULATION_TIME){
-      std::cout<<"MAX SIM TIME REACHED"<<std::endl;
-      break;
+      *logger<<"MAX SIM TIME REACHED"<<std::endl;
+      return;
     }
     std::shared_ptr<Event> e = queue_.top();
     queue_.pop();
@@ -71,3 +72,8 @@ int EventManager::queue_size(){
   return queue_.size();
 }
 
+double EventManager::ReportAvgRTT(double rtt){
+}
+
+double EventManager::ReportCWND(double cwnd){
+}

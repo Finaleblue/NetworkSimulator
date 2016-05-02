@@ -27,6 +27,8 @@ class EventManager{
     double time();
     int queue_size();
     Node& GetNode(std::string);
+    double ReportAvgRTT(double);
+    double ReportCWND(double);  
 
   private:
     std::priority_queue<std::shared_ptr<Event>, std::vector<std::shared_ptr<Event> >, EventCmp > queue_;

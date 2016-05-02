@@ -1,5 +1,3 @@
-#include <algorithm>
-#include <iostream>
 #include <memory>
 #include "flow.h"
 #include "packet.h"
@@ -8,6 +6,9 @@
 #include "event_manager.h"
 
 extern EventManager event_manager;
+extern std::ostream *debugSS;
+extern std::ostream *logger;
+extern std::string outputFolder;
 
 Flow::Flow(std::string id, double start_time, int size, Host& src, 
            Host& dst, std::string protocol):
@@ -17,7 +18,10 @@ Flow::Flow(std::string id, double start_time, int size, Host& src,
   src_(src),
   dst_(dst),
   protocol_(protocol)
-{}
+{
+  RTTSS_ = new std::ofstream(outputFolder+"/"+id+"_"+"AvgRTT.csv");
+  CWNDSS_ = new std::ofstream(outputFolder+"/"+id+"_"+"CWND.csv");      
+}
 
 
 
@@ -34,53 +38,76 @@ void Flow::Pack(){
     data -= global::DATA_PACKET_SIZE;
   }
   num_packs_ = packets_.size();
-  std::cout<<num_packs_<<" packets from "<<id_<<std::endl;
+  *debugSS<<num_packs_<<" packets from "<<id_<<std::endl;
 }
 
 void Flow::Start(double t){
   int count=0;
-  //std::cout<<"flow starts now"<<std::endl;
-  while (count < CWND){
+  //*debugSS<<"flow starts now"<<std::endl;
+  while (count * global::DATA_PACKET_SIZE < CWND){
     if (pack_to_send >= num_packs_)  {return;}
     else{
-      event_manager.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(*this, t+5)));
       event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_[pack_to_send], t))); 
       ++pack_to_send;
       ++count;
     }
   }
+  event_manager.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(*this, t+5)));
 }
 
 void Flow::RTT_Update(double rtt){
   //estimate RTTE
-  std::cout<<"RTTE changed from: "<<rtte_;
-  rtte_ = (rtte_ * (acks_received_) + rtt) / (++acks_received_);
-  std::cout<<" to "<<rtte_<<std::endl;
+  most_recent_rtt_=rtt;
+  *logger<<"@time: "<<event_manager.time()<<" RTTE of "<<id_
+  <<" changed from: "<<rtte_;
+  rtte_ = std::max(1.0, (rtte_ * (acks_received_) + rtt) / (++acks_received_));
+  *logger<<" to "<<rtte_<<std::endl;
+
   if(slow_start){
-    CWND*=2;
-    if (CWND >= SSTHRESH) {slow_start = false;}
+    if (CWND*2 >= SSTHRESH) {slow_start = false;}
+      *logger<<"@time: "<<event_manager.time()
+             <<", CWND changed from: "<<CWND;
+      CWND*=2;
+      *logger<<" to "<<CWND<<std::endl;
   }
   else{
-    ++CWND;
+    CWND += global::DATA_PACKET_SIZE;
   }
+  *CWNDSS_ <<id_<<", "<<event_manager.time()<<", "<<CWND<<", CWND"<<std::endl;
+  *RTTSS_ <<id_<<", "<<event_manager.time()<<", "<<rtte_<<", Average RTT"<<std::endl;
 }
 
 void Flow::Congestion(){
   if (protocol_ == "TAHOE"){
-    CWND = 1;
-    SSTHRESH = CWND/2;
+    *logger<<"@time: "<<event_manager.time()
+          <<", SSTHRESH changed from: "<<SSTHRESH;
+    SSTHRESH = std::max(global::INIT_CWND, CWND/2);
+    *logger<<" to "<<SSTHRESH<<std::endl;
+
+    *logger<<"@time: "<<event_manager.time()
+          <<", CWND changed from: "<<CWND;
+    CWND = global::DATA_PACKET_SIZE;
+    *logger<<" to "<<CWND<<std::endl;
     slow_start=true;
   }
   else if(protocol_ == "RENO"){
-    CWND /= 2;
-    SSTHRESH = CWND/2;
+    *logger<<"@time: "<<event_manager.time()
+          <<", SSTHRESH changed from: "<<SSTHRESH;
+    SSTHRESH = std::max(global::INIT_CWND, CWND/2);
+    *logger<<" to "<<SSTHRESH<<std::endl;
+
+    *logger<<"@time: "<<event_manager.time()
+          <<", CWND changed from: "<<CWND;
+    CWND = std::max(global::DATA_PACKET_SIZE, CWND/2);
+    *logger<<" to "<<CWND<<std::endl;
     slow_start=true;
   }
+
+  *CWNDSS_ <<id_<<", "<<event_manager.time()<<", "<<CWND<<", CWND"<<std::endl;
 }
 
-double Flow::RTTE(){
-  return std::max(rtte_, 1.0);
+double Flow::TimeOutEst(){
+  return std::max(((rtte_ * acks_received_ - most_recent_rtt_) + (most_recent_rtt_ * 1.5)) / acks_received_ ,1.0);
+
 }
-std::string Flow::id() const{
-  return id_;
-}
+

@@ -16,7 +16,7 @@ void Network::AddLink(std::string id, std::string end1_id, std::string end2_id,
 
   Node *end1;
   Node *end2;
-  if (end1_id[0] == 'H'){
+  if (end1_id[0] == 'H' || end1_id[0] == 'S' || end1_id[0] == 'T'){
     end1 = &hosts_.at(end1_id);
   }
   else{
@@ -77,8 +77,8 @@ Router& Network::GetRouter(std::string rid){
 }
 
 Node& Network::GetNode(std::string nid){
-  if (nid[0] == 'H'){return GetHost(nid);}
-  else  {return GetRouter(nid);}
+  if (nid[0] == 'R'){return GetRouter(nid);}
+  else  {return GetHost(nid);}
 }
 
 Flow& Network::GetFlow(std::string fid){

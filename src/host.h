@@ -12,13 +12,13 @@ class Host: public Node{
     void ReSend(Packet, double);
     bool allowedToTransmit() const;
     bool CheckAck(Packet p);
-    int NextAck(std::string);
+    void NextAck(std::string);
     int num_received_packets();
     Link& GetLink();
   private:
     std::map<std::string, std::map<int, int> > ack_stack_;
     std::map<std::string, std::set<int> > received_packets_;
-    int next_ack_=1;
-    double last_transmit_time_;
+    std::map<std::string, int> sent_packets_; //keep track of sent times;
+    std::map<std::string, int> next_ack_;
 };
 #endif

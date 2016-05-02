@@ -27,7 +27,7 @@ Node& Packet::GetDst() const{
   return dst_;
 }
 
-int Packet::size() const{
+double Packet::size() const{
   return size_;
 }
 

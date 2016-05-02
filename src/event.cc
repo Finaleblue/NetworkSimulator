@@ -1,4 +1,4 @@
-#include <iostream>
+#include "global.h"
 #include "event.h"
 #include "flow.h"
 #include "link.h"
@@ -7,6 +7,8 @@
 #include "event_manager.h"
 
 extern EventManager event_manager;
+extern std::ostream *debugSS;
+extern std::ostream* logger;
 
 Event::Event(double t): schedule_at_(t), debugmsg("Event"){}
 Event::~Event(){}
@@ -16,7 +18,7 @@ double Event::GetScheduledTime(){
 }
 
 void Event::Start(){
-  std::cout <<"default event. do nothing" <<std::endl;
+  *debugSS <<"default event. do nothing" <<std::endl;
 }
 
 
@@ -25,7 +27,7 @@ ReceivePacketEvent::ReceivePacketEvent(Link& from, Node &target, Packet p, doubl
 
 
 void ReceivePacketEvent::Start(){
-  std::cout<<"@time: "<<schedule_at_<<", "
+  *logger<<"@time: "<<schedule_at_<<", "
            <<target_.id()<<" received Packet "
            <<packet_to_receive_.fid()<<packet_to_receive_.id()<<" From "
            <<from_.GetConnectedNode(target_).id()<<std::endl;
@@ -37,10 +39,11 @@ TransmitPacketEvent::TransmitPacketEvent(Link &target, Node& next, Packet p, dou
   :target_(target), packet_to_send_(p), next_(next), Event(t){}
 
 void TransmitPacketEvent::Start(){
-  std::cout<<"@time: "<<schedule_at_<<", "
+  *logger<<"@time: "<<schedule_at_<<", "
            <<target_.GetConnectedNode(next_).id()<<" pushed Packet "
            <<packet_to_send_.fid()<<packet_to_send_.id()<<" to "<<target_.id()<<std::endl;
   target_.ReceivePacket(next_, packet_to_send_, schedule_at_);
+  //std::cout<<"event flag1"<<std::endl;
 }
 
 FlowEndEvent::FlowEndEvent(Flow &f, double t)
@@ -63,7 +66,7 @@ SendPacketEvent::SendPacketEvent(Node &target, Packet p, double t)
 
 
 void SendPacketEvent::Start(){
-  std::cout<<"@time: "<<schedule_at_<<", "
+  *logger<<"@time: "<<schedule_at_<<", "
            <<target_.id() <<" initiated "
            <<packet_to_send_.id()<< " to " 
            << packet_to_send_.GetDst().id()<<std::endl;
@@ -76,7 +79,7 @@ AckTimeoutEvent::AckTimeoutEvent(Host& target, Packet p, double t) //this packet
 void AckTimeoutEvent::Start(){
   if (target_.CheckAck(ack_packet_)) {return;}
   event_manager.Net().GetFlow(ack_packet_.fid()).Congestion();
-  std::cout<<"@time: "<<schedule_at_<<", "
+  *logger<<"@time: "<<schedule_at_<<", "
            <<"ACK "<<ack_packet_.id()<<" timeout."
            <<" Resending the packet."<<std::endl;
   target_.ReSend(ack_packet_, schedule_at_);

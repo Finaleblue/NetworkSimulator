@@ -5,6 +5,8 @@
 #include "event_manager.h"
 
 extern EventManager event_manager;
+extern std::ostream *logger;
+extern std::ostream *debugSS;
 
 Router::Router(std::string id): Node(id){}
 
@@ -38,7 +40,6 @@ Link& Router::GetRoute(std::string host_id){
   if(itr->second == "DNE"){
     //if no info on the routing table, just be greedy
     Link& l = Greedy(host_id);
-    next_hop_.at(host_id) = l.id();
     return l;
   }
   std::string lid;
@@ -55,7 +56,9 @@ void Router::UpdateTable(std::string router_id){
 void Router::UpdateCost(){ // updates cost vector every time step
   bool updated = false;
   for(auto &neighbor : neighbors_){
-    cost_.at(neighbor.second) = event_manager.Net().GetLink(neighbor.first).GetCost(); // sum (packetSize/rate)
+    if(neighbor.first[0] == 'R'){
+      cost_.at(neighbor.second) = event_manager.Net().GetLink(neighbor.first).GetCost(); // sum (packetSize/rate)
+    }
   }
   for(auto &r : routing_table_){
     for(auto &c : r.second){
@@ -98,20 +101,28 @@ std::map<std::string, double> Router::RoutingVector() const{
 
 //initiate with greedy algorithm
 Link& Router::Greedy (std::string hid){
+  //*debugSS<<"GREEDY"<<id_<<std::endl;
   double min_cost = DBL_MAX;
   std::string min_link; 
   for( auto lid : links_){
     Link& l = event_manager.Net().GetLink(lid);   
-    if (l.GetConnectedNode(*this).id() == hid)
-    {return l;}
+
     if (l == *received_from_) 
     {continue;}
+    //*debugSS<<"GREEDY1.1"<<neighbors_.at(lid)<<std::endl;
+    if (neighbors_.at(lid)[0] == 'H' || neighbors_.at(lid)[0] == 'T' || neighbors_.at(lid)[0] == 'S'){
+      //*debugSS<<"GREEDY2"<<id_<<std::endl;
+      //*debugSS<<"hid: "<<hid<<std::endl;
+      if (neighbors_.at(lid) == hid){return l;}
+      else {continue;}
+    }
     
-    if (l.GetCost() < min_cost) {
+    if (l.GetCost() < min_cost){
       min_cost = l.GetCost();
       min_link = lid;
     }
   }
+  if (min_link == "") {return *received_from_;}
   return event_manager.Net().GetLink(min_link);
 }
 
@@ -120,46 +131,50 @@ void Router::Init(){
   std::map<std::string, double> inner;
   for (auto &itr : event_manager.Net().GetHosts()){
    //   std::cout<<
-    for(auto &iitr : nodes_){
-      if(itr.first == iitr){
-        inner.insert({itr.first, 0});
+    for(auto &iitr : links_){
+      if(neighbors_.at(iitr) == itr.first){ // if i am connected to a host,
+        inner.insert({itr.first, 0});    // set distance to 0
       }
-    
       else{
-        inner.insert({itr.first, 1000000});
+        inner.insert({itr.first, 1000000});  //set distance to every other host to million
       }
     }
   }
-  for (auto &neighbor : nodes_){
-  //  std::cout<<"r_table: {"<<neighbor<<", inner}"<<std::endl;
-    routing_table_.insert({neighbor, inner});
-    cost_.insert({neighbor, 1000000});
+
+  routing_table_.insert({id_, inner});
+  
+  std::map<std::string, double> inner2;
+  for (auto &itr : nodes_){ //for all my neighbor nodes
+    if(itr[0] == 'H' || itr[0] == 'S' || itr[0] == 'T'){ // hosts do not have a routing table
+      continue;
+    }
+    else{
+      for(auto &h : event_manager.Net().GetHosts()){
+        inner2.insert({h.first, 1000000}); // make everything million
+      }
+      routing_table_.insert({itr, inner2});
+    }
   }
+
+  for (auto &neighbor : nodes_){ //initialize the cost vector <neighboring router id, link cost>
+  //  std::cout<<"r_table: {"<<neighbor<<", inner}"<<std::endl;
+    if(neighbor[0] =='R'){
+      cost_.insert({neighbor, 1000000});
+    }
+  }
+
   for(auto &itr : event_manager.Net().GetHosts()){
-      for(auto &iitr : nodes_){
-        if (itr.first == iitr){
-          next_hop_.insert({itr.first, itr.second.GetLink().id()});
+      for(auto &iitr : links_){
+        if (itr.first == neighbors_.at(iitr)){
+          next_hop_.insert({itr.first, iitr});
         }
         else{
           next_hop_.insert({itr.first, "DNE"}); //Does Not Exist
         }
       }
   }
-  routing_table_.insert({id_, inner});
-  cost_.insert({id_, 1000000});
   UpdateCost();
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
