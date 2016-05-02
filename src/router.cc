@@ -18,6 +18,7 @@ void Router::SendPacket(Packet p, double t) {
 
 void Router::ReceivePacket(Link& from, Packet p, double t){
   from.flush(t);
+  UpdateCost();
   received_from_ = &from;
   if (p.type() == 'C'){ //if the received packet is control type
      ReceiveControl(p);
