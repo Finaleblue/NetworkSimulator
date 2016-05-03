@@ -6,8 +6,7 @@
 #include "packet.h"
 #include "event_manager.h"
 
-extern EventManager event_manager;
-extern std::ostream *debugSS;
+extern EventManager event_manager; extern std::ostream *debugSS;
 extern std::ostream* logger;
 
 Event::Event(double t): schedule_at_(t), debugmsg("Event"){}
@@ -58,7 +57,7 @@ FlowStartEvent::FlowStartEvent(Flow &f, int fnum, double t)
   : flow_num_(fnum), flow_to_start_(f), Event(t){}
 
 void FlowStartEvent::Start(){
-  flow_to_start_.Start(schedule_at_, flow_num_);
+  flow_to_start_.Start(flow_num_, schedule_at_);
 }
 
 SendPacketEvent::SendPacketEvent(Node &target, Packet p, double t)
@@ -77,10 +76,11 @@ AckTimeoutEvent::AckTimeoutEvent(Host& target, Packet p, double t) //this packet
   :target_(target), ack_packet_(p), Event(t){}
 
 void AckTimeoutEvent::Start(){
+  //*logger<<"timeout event triggered " <<ack_packet_.fid()+ack_packet_.id()<<std::endl;
   if (target_.CheckAck(ack_packet_)) {return;}
-  event_manager.Net().GetFlow(ack_packet_.fid()).Congestion();
   *logger<<"@time: "<<schedule_at_<<", "
            <<"ACK "<<ack_packet_.id()<<" timeout."
            <<" Resending the packet."<<std::endl;
+  event_manager.Net().GetFlow(ack_packet_.fid()).Congestion(ack_packet_.flow_num_);
   target_.ReSend(ack_packet_, schedule_at_);
 }

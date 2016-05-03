@@ -31,50 +31,58 @@ double Flow::GetStartTime() const{
 
 void Flow::Pack(){
   int data = size_;
-  *debugSS<<data<<"data"<<std::endl;
-  int i=1;
+  int i = data%(int)global::DATA_PACKET_SIZE == 0 ? data/global::DATA_PACKET_SIZE : data/global::DATA_PACKET_SIZE+1; 
+  *debugSS<<data<<"bits to transmit"<<std::endl;
   while (data > 0){
-    packets_.push_back(Packet(id_, i, 'D', i ,src_, dst_));
-    ++i;
+    packets_.push(Packet(id_, 0, 'D', i ,src_, dst_));
+    --i;
     data -= global::DATA_PACKET_SIZE;
   }
   num_packs_ = packets_.size();
   *debugSS<<num_packs_<<" packets from "<<id_<<std::endl;
 }
 
-void Flow::Start(double t){
+void Flow::Start(int fnum, double t){
   if (protocol_ == "UDP"){
-    *debugSS<<"UDP Protocol loaded for "<<id_<<std::endl;
     double wait_ = global::DATA_PACKET_SIZE / src_.GetLink().rate();
     if(src_.GetLink().isAvailable()){
       if (pack_to_send >= num_packs_)  {return;}
       else{
-        event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_[pack_to_send], t))); 
+        event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_.top(), t))); 
         ++pack_to_send;
+        packets_.pop();
       }
     }
-    event_manager.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(*this, t+wait_)));
+    event_manager.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(*this, flow_num_, t+wait_)));
   }
 
   else{
-    if (src_.GetLink().isAvailable()){
-      int count=0;
-      //*debugSS<<"flow starts now"<<std::endl;
-      while (count * global::DATA_PACKET_SIZE < CWND){
-        if (pack_to_send >= num_packs_)  {return;}
-        else{
-          event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, packets_[pack_to_send], t))); 
-          ++pack_to_send;
-          ++count;
+    if (flow_num_ > fnum) {return;}
+    //*logger<<flow_num_<<"th wave"<<std::endl;
+    int count=0;
+    //*debugSS<<"flow starts now"<<std::endl;
+    while ((++count) * global::DATA_PACKET_SIZE <= CWND){
+      if (packets_.empty())  {return;}
+      else{
+        Packet p = packets_.top();
+        packets_.pop();
+        //*logger<<"p has seq num "<<p.seqNum()<<" and "<<id_<<" next ack is " <<dst_.NextAck(id_)<<std::endl;
+        if (p.seqNum() <= dst_.NextAck(id_)){
+          --count;
+          continue;
         }
+        p.flow_num_ = flow_num_;
+        event_manager.push(std::shared_ptr<SendPacketEvent>(new SendPacketEvent(src_, p, t))); 
+        ++pack_to_send;
       }
-      double wait_ = count*global::DATA_PACKET_SIZE / src_.GetLink().rate();
-      event_manager.push(std::shared_ptr<FlowStartEvent>(new FlowStartEvent(*this, t+wait_)));
     }
+    ++flow_num_;
   }
 }
 
-void Flow::RTT_Update(double rtt){
+void Flow::RTT_Update(int fnum, double rtt){
+  if(rtt_book_.find(fnum) != rtt_book_.end()) {return;}
+  rtt_book_.insert(fnum);
   //estimate RTTE
   most_recent_rtt_=rtt;
   *logger<<"@time: "<<event_manager.time()<<" RTTE of "<<id_
@@ -96,7 +104,9 @@ void Flow::RTT_Update(double rtt){
   *RTTSS_ <<id_<<", "<<event_manager.time()<<", "<<rtte_<<", Average RTT"<<std::endl;
 }
 
-void Flow::Congestion(){
+void Flow::Congestion(int fnum){
+  if (congestion_book_.find(fnum) != congestion_book_.end())  {return;}
+  congestion_book_.insert(fnum);
   if (protocol_ == "TAHOE"){
     *logger<<"@time: "<<event_manager.time()
           <<", SSTHRESH changed from: "<<SSTHRESH;
@@ -126,7 +136,10 @@ void Flow::Congestion(){
 }
 
 double Flow::TimeOutEst(){
-  return std::max(((rtte_ * acks_received_ - most_recent_rtt_) + (most_recent_rtt_ * 1.5)) / acks_received_ ,1.0);
+  return 4*std::max(((rtte_ * acks_received_ - most_recent_rtt_) + (most_recent_rtt_ * 3)) / acks_received_ ,1.0);
 
 }
 
+void Flow::Push(Packet &p){
+  packets_.push(p);
+}
