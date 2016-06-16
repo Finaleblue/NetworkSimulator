@@ -1,3 +1,9 @@
+/**
+ * Cooper Union Communication Networks Final Project
+ * Author: Eui Han
+ * Version: 1.4
+ **/
+
 #include <memory>
 #include "flow.h"
 #include "packet.h"

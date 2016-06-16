@@ -1,3 +1,9 @@
+/**
+ * Cooper Union Communication Networks Final Project
+ * Author: Eui Han, Arvind Nagalingam
+ * Version: 1.4
+ **/
+
 #ifndef ROUTER_H_
 #define ROUTER_H_
 

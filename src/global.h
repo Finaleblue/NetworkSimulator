@@ -1,3 +1,9 @@
+/**
+ * Cooper Union Communication Networks Final Project
+ * Author: Eui Han
+ * Version: 1.4
+ **/
+
 #ifndef GLOBAL_H_
 #define GLOBAL_H_
 #include <iostream>

@@ -1,3 +1,8 @@
+/**
+ * Cooper Union Communication Networks Final Project
+ * Author: Eui Han
+ * Version: 1.4
+ **/
 #include <memory>
 #include "event_manager.h"
 #include "flow.h"

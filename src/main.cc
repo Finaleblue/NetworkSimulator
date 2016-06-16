@@ -1,11 +1,8 @@
 /**
- * ECE408 
- * comcast.cpp
- * Purpose: Network Simulator Entry Point
- * 
- * @author Kangqiao Lei
- * @version 0.3.0 04/26/16
- */
+ * Cooper Union Communication Networks Final Project
+ * Author: Kangqiao Lei
+ * Version: 1.4 
+ **/
 
 //#define NDEBUG // Comment out to turn on debug information and assertions
 

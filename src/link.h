@@ -1,3 +1,8 @@
+/**
+ * Cooper Union Communication Networks Final Project
+ * Author: Eui Han
+ * Version: 1.4
+ **/
 #ifndef LINK_H_
 #define LINK_H_
 

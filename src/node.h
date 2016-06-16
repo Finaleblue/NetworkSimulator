@@ -1,11 +1,8 @@
 /**
- * CommNets
- * node.h
- * Purpose: Nodes are points of the network, i.e. hosts and routers
- * 
- * @author Eui Han
- * @version 0.1 04/05/16
- */
+ * Cooper Union Communication Networks Final Project
+ * Author: Eui Han
+ * Version: 1.4
+ **/
 
 #ifndef NODE_H_
 #define NODE_H_

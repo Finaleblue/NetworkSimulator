@@ -1,6 +1,12 @@
+/**
+ * Cooper Union Communication Networks Final Project
+ * Author: Eui Han
+ * Version: 1.4
+ **/
+
 #include "global.h"
 #include "event.h"
-#include "flow.h"
+#include "flow.jkkh"
 #include "link.h"
 #include "node.h"
 #include "packet.h"

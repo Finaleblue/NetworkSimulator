@@ -1,3 +1,8 @@
+/**
+ * Cooper Union Communication Networks Final Project
+ * Author: Eui Han
+ * Version: 1.4
+ **/
 #ifndef HOST_H_
 #define HOST_H_
 

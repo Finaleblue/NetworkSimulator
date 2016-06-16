@@ -1,3 +1,9 @@
+/**
+ * Cooper Union Communication Networks Final Project
+ * Author: Eui Han
+ * Version: 1.4
+ **/
+
 #ifndef FLOW_H_
 #define FLOW_H_
 

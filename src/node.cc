@@ -1,10 +1,9 @@
 /**
- * CommNets
- * node.cc
- * 
- * @author Eui Han
- * @version 0.1 04/05/16
- */
+ * Cooper Union Communication Networks Final Project
+ * Author: Eui Han
+ * Version: 1.4
+ **/
+
 #include <iostream>
 #include "node.h"
 #include "packet.h"

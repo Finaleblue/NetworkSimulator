@@ -1,3 +1,9 @@
+/**
+ * Cooper Union Communication Networks Final Project
+ * Author: Eui Han, Arvind Nagalingam
+ * Version: 1.4
+ **/
+
 #include <memory>
 #include <cfloat>
 #include "router.h"

@@ -1,3 +1,9 @@
+/**
+ * Cooper Union Communication Networks Final Project
+ * Author: Eui Han
+ * Version: 1.4
+ **/
+
 #ifndef EVENT_MANAGER_H
 #define EVENT_MANAGER_H
 

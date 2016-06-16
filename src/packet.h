@@ -1,7 +1,9 @@
 /**
- * CommNets
- * @Author Eui Han
- */
+ * Cooper Union Communication Networks Final Project
+ * Author: Eui Han
+ * Version: 1.4
+ **/
+
 #ifndef PACKET_H_
 #define PACKET_H_
 #include <string>
